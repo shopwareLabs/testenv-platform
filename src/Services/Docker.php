@@ -29,7 +29,7 @@ class Docker
         $domain = strtolower($pluginName .'-' .  $id. '.' . $_SERVER['BASE_HOST']);
 
         $body = new ContainersCreatePostBody();
-        $body->setImage('shyim/shopware-testenv:' . $request->installVersion);
+        $body->setImage('shopware/testenv:' . $request->installVersion);
         $body->setEnv([
             'VIRTUAL_HOST=' . $domain,
             'PLUGIN_NAME=' . $pluginName
