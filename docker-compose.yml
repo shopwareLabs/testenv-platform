@@ -1,0 +1,28 @@
+version: '2'
+
+services:
+  traefik:
+    image: traefik:1.7
+    command: --docker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 80:80
+  api:
+    image: shopware/testenv-platform
+    env_file: .env
+    build:
+      context: images/webserver
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/var/www/html
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /tmp:/tmp
+    labels:
+      traefik.frontend.rule: "Host: ${BASE_HOST}"
+  mail:
+    image: djfarrelly/maildev
+    ports:
+    - 1080:80
+    labels:
+      traefik.frontend.rule: "Host: ${BASE_HOST}"
