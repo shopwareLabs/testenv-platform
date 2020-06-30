@@ -25,4 +25,5 @@ services:
     ports:
     - 1080:80
     labels:
-      traefik.frontend.rule: "Host: ${BASE_HOST}"
+      traefik.frontend.rule: "Host: mail.${BASE_HOST}"
+      traefik.port: '80'
