@@ -8,9 +8,13 @@ done
 
 mysql shopware -e "UPDATE s_core_shops set host = '${VIRTUAL_HOST}'"
 
+sudo -E -u www-data git clone https://github.com/FriendsOfShopware/FroshAdminer.git /var/www/html/custom/plugins/FroshAdminer
+sudo -E -u www-data /var/www/html/bin/console sw:plugin:refresh
+
+sudo -E -u www-data /var/www/html/bin/console sw:plugin:install FroshAdminer --activate
+
 if [[ ! -z $PLUGIN_NAME ]]; then
-    /var/www/html/bin/console sw:plugin:refresh
-    /var/www/html/bin/console sw:plugin:install $PLUGIN_NAME --activate
+    sudo -E -u www-data /var/www/html/bin/console sw:plugin:install $PLUGIN_NAME --activate
 fi
 
 rm -rf /var/www/html/var/cache/*
