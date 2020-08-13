@@ -16,7 +16,30 @@ RUN apk add --no-cache mysql mysql-client git sudo && \
 RUN mkdir /run/mysqld/ && chown -R mysql:mysql /run/mysqld/ && /usr/bin/mysqld --basedir=/usr --datadir=/var/lib/mysql --plugin-dir=/usr/lib/mysql/plugin --user=mysql & sleep 2 && \
     mysql -e "CREATE DATABASE shopware" && \
     mysqladmin --user=root password 'root' && \
+    cd /var/www/shop/ && \
     php /var/www/shop/public/recovery/install/index.php --shop-host localhost --db-host localhost --db-socket /run/mysqld/mysqld.sock  --db-user root --db-password root --db-name shopware --shop-locale en-GB --shop-currency EUR --admin-username demo  --admin-password demo --admin-email demo@foo.com --admin-locale en-GB --admin-firstname demo --admin-lastname demo -n && \
+
+    wget https://www.shopware.com/de/Download/redirect/version/sw6/file/update_6.2.2_1592398977.zip && \
+    unzip -o update_6.2.2_1592398977.zip && \
+    php /var/www/shop/public/recovery/update/index.php -n && \
+    rm -rf update-assets && \
+
+    wget https://www.shopware.com/de/Download/redirect/version/sw6/file/update_6.2.3_1594641397.zip && \
+    unzip -o update_6.2.3_1594641397.zip && \
+    php /var/www/shop/public/recovery/update/index.php -n && \
+    rm -rf update-assets && \
+
+    wget https://www.shopware.com/de/Download/redirect/version/sw6/file/update_v6.3.0.0_83857c5fb3cde7fc77392d843c45d95b661c36a8.zip && \
+    unzip -o update_v6.3.0.0_83857c5fb3cde7fc77392d843c45d95b661c36a8.zip && \
+    php /var/www/shop/public/recovery/update/index.php -n && \
+    rm -rf update-assets && \
+
+    wget https://www.shopware.com/de/Download/redirect/version/sw6/file/update_v6.3.0.1_8c1c2d2a8fa041a354e77305901ad4597717e756.zip && \
+    unzip -o update_v6.3.0.1_8c1c2d2a8fa041a354e77305901ad4597717e756.zip && \
+    php /var/www/shop/public/recovery/update/index.php -n && \
+    rm -rf update-assets && \
+    rm update*.zip && \
+
     php /var/www/shop/bin/console framework:demodata -p 3000 && \
     php /var/www/shop/bin/console dal:refresh:index && \
     mysql shopware -e "INSERT INTO system_config (id, configuration_key, configuration_value, sales_channel_id, created_at, updated_at) VALUES (X'b3ae4d7111114377af9480c4a0911111', 'core.frw.completedAt', '{\"_value\": \"2019-10-07T10:46:23+00:00\"}', NULL, '2019-10-07 10:46:23.169', NULL);" && \
@@ -24,7 +47,6 @@ RUN mkdir /run/mysqld/ && chown -R mysql:mysql /run/mysqld/ && /usr/bin/mysqld -
     php /var/www/shop/bin/console theme:change Storefront --all && \
     chown -R 1000:1000 /var/www
 
-COPY patches/ProductAvailableFilter.php /var/www/shop/vendor/shopware/core/Content/Product/SalesChannel/ProductAvailableFilter.php
 COPY entrypoint.sh /entrypoint.sh
 COPY www.conf /etc/nginx/sites-enabled/www.conf
 

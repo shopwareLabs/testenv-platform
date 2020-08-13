@@ -12,7 +12,9 @@ class Create extends AbstractController
     {
         $shopRequest = (new CreateShopRequest())->fillFromRequest($request);
 
-        if (version_compare($shopRequest->installVersion, '6.2.0', '>=')) {
+        if (version_compare($shopRequest->installVersion, '6.3.0', '>=')) {
+            $shopRequest->installVersion = '6.3';
+        } elseif (version_compare($shopRequest->installVersion, '6.2.0', '>=')) {
             $shopRequest->installVersion = '6.2';
         } elseif (version_compare($shopRequest->installVersion, '6.0.0', '>=')) {
             $shopRequest->installVersion = '6.1';
