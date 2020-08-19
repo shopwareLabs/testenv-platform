@@ -47,7 +47,12 @@ RUN mkdir /run/mysqld/ && chown -R mysql:mysql /run/mysqld/ && /usr/bin/mysqld -
     php /var/www/shop/bin/console theme:change Storefront --all && \
     chown -R 1000:1000 /var/www
 
+COPY fix-language.php /
+RUN /usr/bin/mysqld --basedir=/usr --datadir=/var/lib/mysql --plugin-dir=/usr/lib/mysql/plugin --user=mysql & sleep 2 && \
+    php /fix-language.php
+
 COPY entrypoint.sh /entrypoint.sh
+COPY SwagI18nDutch /var/www/shop/custom/plugins/SwagI18nDutch
 COPY www.conf /etc/nginx/sites-enabled/www.conf
 
 CMD ["/bin/sh", "/entrypoint.sh"]
