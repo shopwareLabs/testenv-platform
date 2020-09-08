@@ -40,6 +40,12 @@ RUN mkdir /run/mysqld/ && chown -R mysql:mysql /run/mysqld/ && /usr/bin/mysqld -
     rm -rf update-assets && \
     rm update*.zip && \
 
+    wget https://releases.shopware.com/sw6/update_v6.3.1.0_363abad22982da639888b36d84d52730e8dc05e6.zip && \
+    unzip -o update_v6.3.1.0_363abad22982da639888b36d84d52730e8dc05e6.zip && \
+    php /var/www/shop/public/recovery/update/index.php -n && \
+    rm -rf update-assets && \
+    rm update*.zip && \
+
     php /var/www/shop/bin/console framework:demodata -p 3000 && \
     php /var/www/shop/bin/console dal:refresh:index && \
     mysql shopware -e "INSERT INTO system_config (id, configuration_key, configuration_value, sales_channel_id, created_at, updated_at) VALUES (X'b3ae4d7111114377af9480c4a0911111', 'core.frw.completedAt', '{\"_value\": \"2019-10-07T10:46:23+00:00\"}', NULL, '2019-10-07 10:46:23.169', NULL);" && \
