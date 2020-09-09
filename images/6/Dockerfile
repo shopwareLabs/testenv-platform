@@ -1,4 +1,4 @@
-FROM shyim/shopware-platform-nginx-production:php74
+FROM ghcr.io/shyim/shopware-docker/6/nginx-production:php74
 
 ARG SHOPWARE_DL=https://www.shopware.com/de/Download/redirect/version/sw6/file/install_6.2.0_1589874223.zip
 

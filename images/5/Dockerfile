@@ -1,8 +1,8 @@
-FROM shyim/shopware-classic-nginx-production:php74
+FROM ghcr.io/shyim/shopware-docker/5/nginx-production:php74
 
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 
-ARG SHOPWARE_DL=https://www.shopware.com/de/Download/redirect/version/sw5/file/install_5.6.7_8cec71ed6df4804610664944e3f67e5d3a61adea.zip
+ARG SHOPWARE_DL=https://www.shopware.com/de/Download/redirect/version/sw5/file/install_5.6.8_7b49bfb8ea0d5269b349722157fe324a341ed28e.zip
 
 RUN apk add --no-cache mysql \
     mysql-client \
