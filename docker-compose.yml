@@ -12,10 +12,9 @@ services:
     image: shopware/testenv-platform
     env_file: .env
     build:
-      context: images/webserver
+      context: .
       dockerfile: Dockerfile
     volumes:
-      - ./:/var/www/html
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /tmp:/tmp
     labels:
