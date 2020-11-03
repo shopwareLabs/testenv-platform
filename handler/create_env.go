@@ -41,6 +41,7 @@ func CreateEnvironment(w http.ResponseWriter, r *http.Request, ps httprouter.Par
 		Env: []string{
 			fmt.Sprintf("PLUGIN_NAME=%s", request.Name),
 			fmt.Sprintf("VIRTUAL_HOST=%s", host),
+			fmt.Sprintf("APP_URL=%s", fmt.Sprintf("http://%s/shop/public", host)),
 		},
 		Labels: map[string]string{
 			"testenv":               "1",
