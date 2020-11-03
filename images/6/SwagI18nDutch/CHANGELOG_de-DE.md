@@ -1,3 +1,6 @@
+# 2.2.3
+- LAN-5 - Update der Sprachdateien - 2020-08-24
+
 # 2.2.2
 - PT-11925 - Kompatibilität für Shopware 6.3
 

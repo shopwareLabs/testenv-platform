@@ -38,6 +38,11 @@ class SwagI18nDutch extends Plugin
         parent::uninstall($context);
     }
 
+    public function rebuildContainer(): bool
+    {
+        return false;
+    }
+
     private function addLanguage(Context $shopwareContext): void
     {
         $localeId = $this->getLocaleId($shopwareContext);

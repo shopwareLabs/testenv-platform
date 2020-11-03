@@ -1,12 +1,12 @@
 {
     "name": "swag/i18n-dutch",
     "description": "Language pack for Shopware 6: Dutch",
-    "version": "2.2.2",
+    "version": "2.2.3",
     "type": "shopware-platform-plugin",
     "license": "MIT",
     "authors": [
         {
-            "name": "shopware AG"
+            "name": "Shopware"
         }
     ],
     "autoload": {
@@ -15,7 +15,7 @@
         }
     },
     "require": {
-        "shopware/core": "~6.3"
+        "shopware/core": "6.2.0-RC1 || ~6.2.0 || ~6.3.0"
     },
     "prefer-stable": true,
     "extra": {

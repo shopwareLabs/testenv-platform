@@ -1,3 +1,6 @@
+# 2.2.3
+- LAN-5 - Update of language files - 2020-08-24
+
 # 2.2.2
 - PT-11925 - Shopware 6.3 compatibility
 

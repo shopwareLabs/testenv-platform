@@ -2,7 +2,8 @@
     "document": {
         "invoiceNumber": "Factuurnr. %invoiceNumber%",
         "invoiceHeadline": "Factuurnr. %invoiceNumber%",
-        "stornoHeadline": "Annuleringsnummernr. %stornoNumber% voor factuurnr. %invoiceNumber%",
+        "stornoHeadline": "Annuleringsnr. %stornoNumber% voor factuurnr. %invoiceNumber%",
+        "stornoNumber": "Annuleringsnr. %stornoNumber%",
         "deliveryNoteNumber": "Leveringsnr. %deliveryNoteNumber%",
         "deliveryNoteHeadline": "Leveringsnr. %deliveryNoteNumber% voor bestelnr. %orderNumber%",
         "creditNoteNumber": "Vouchercode %creditNoteNumber%",
@@ -40,14 +41,14 @@
         "paymentShippingInfo": {
             "paymentMethod": "Gekozen betaalwijze: %paymentMethod%",
             "shippingMethod": "Gekozen verzendwijze: %shippingMethod%",
-            "additionalInfo": "De goederen blijven onze eigendom tot de volledige betaling."
+            "additionalInfo": "De goederen blijven ons eigendom tot de volledige betaling."
         }
     },
     "filter": {
-        "sortByNameAscending": "Naam oplopend",
-        "sortByNameDescending": "Naam aflopend",
-        "sortByPriceAscending": "Prijs van laag naar hoog",
-        "sortByPriceDescending": "Prijs van hoog naar laag",
+        "sortByNameAscending": "Naam, A-Z",
+        "sortByNameDescending": "Naam, Z-A",
+        "sortByPriceAscending": "Prijs, opstijgend",
+        "sortByPriceDescending": "Prijs, dalend",
         "sortByScore": "Beste resultaten"
     }
 }
