@@ -1,0 +1,23 @@
+
+name: CI
+on:
+  push:
+    branches: [ master ]
+  schedule:
+    - cron: '0 1 * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Login into Docker Registery
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "shyim" --password-stdin
+
+    - uses: denolib/setup-deno@master
+      with:
+        deno-version: v1.x
+
+    - name: Run Docker
+      run: cd images/6 && deno run --allow-net --allow-run build.ts

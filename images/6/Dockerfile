@@ -1,64 +1,85 @@
-FROM ghcr.io/shyim/shopware-docker/6/nginx-production:php74
+FROM php:7.4-fpm-alpine
+
+ENV TZ=Europe/Berlin \
+    APP_URL=http://localhost/shop/public \
+    APP_ENV=prod \
+    APP_SECRET=440dec3766de53010c5ccf6231c182acfc90bd25cff82e771245f736fd276518 \
+    INSTANCE_ID=10612e3916e153dd3447850e944a03fabe89440970295447a30a75b151bd844e \
+    DATABASE_URL=mysql://root:root@localhost/shopware \
+    MAILER_URL=smtp://mail:25 \
+    SHOPWARE_ES_HOSTS= \
+    SHOPWARE_ES_ENABLED=0 \
+    SHOPWARE_ES_INDEXING_ENABLED=0 \
+    SHOPWARE_ES_INDEX_PREFIX= \
+    COMPOSER_HOME=/tmp/composer \
+    SHOPWARE_HTTP_CACHE_ENABLED=1 \
+    SHOPWARE_HTTP_DEFAULT_TTL=7200 \
+    BLUE_GREEN_DEPLOYMENT=0 \
+    INSTALL_LOCALE=nl-NL \
+    INSTALL_CURRENCY=EUR \
+    FPM_PM=dynamic \
+    FPM_PM_MAX_CHILDREN=5 \
+    FPM_PM_START_SERVERS=2 \
+    FPM_PM_MIN_SPARE_SERVERS=1 \
+    FPM_PM_MAX_SPARE_SERVERS=3 \
+    PHP_MAX_UPLOAD_SIZE=128m \
+    PHP_MAX_EXECUTION_TIME=300 \
+    PHP_MEMORY_LIMIT=512m
+
+COPY --from=ochinchina/supervisord:latest /usr/local/bin/supervisord /usr/bin/supervisord
+COPY --from=composer /usr/bin/composer /usr/local/bin/composer
+COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/bin/
+
+RUN apk add --no-cache \
+      nginx \
+      shadow \
+      unzip \
+      wget \
+      sudo \
+      bash \
+      patch \
+      jq \
+      mysql \
+      mysql-client \
+      git && \
+    install-php-extensions bcmath gd intl mysqli pdo_mysql sockets bz2 gmp soap zip gmp ffi redis opcache && \
+    ln -s /usr/local/bin/php /usr/bin/php && \
+    ln -sf /dev/stdout /var/log/nginx/access.log && \
+    ln -sf /dev/stderr /var/log/nginx/error.log && \
+    rm -rf /var/lib/nginx/tmp && \
+    ln -sf /tmp /var/lib/nginx/tmp && \
+    mkdir -p /var/tmp/nginx/ || true && \
+    chown -R www-data:www-data /var/lib/nginx /var/tmp/nginx/ && \
+    chmod 777 -R /var/tmp/nginx/ && \
+    rm -rf /tmp/* && \
+    mkdir -p /var/www/shop/ && \
+    chown -R www-data:www-data /var/www && \
+    usermod -u 1000 www-data && \
+    mysql_install_db --datadir=/var/lib/mysql --user=mysql && \
+    mkdir /run/mysqld/ && chown -R mysql:mysql /run/mysqld/
 
 ARG SHOPWARE_DL=https://www.shopware.com/de/Download/redirect/version/sw6/file/install_6.2.0_1589874223.zip
 
-RUN apk add --no-cache mysql mysql-client git sudo && \
-    mkdir -p /var/www/shop/ && \
-    cd /var/www/shop/ && \
-    wget $SHOPWARE_DL && \
-    unzip *.zip && \
-    rm *.zip && \
-    mysql_install_db --datadir=/var/lib/mysql --user=mysql && \
-    echo "pdo_mysql.default_socket=/run/mysqld/mysqld.sock" > /usr/local/etc/php/conf.d/pdo_mysql.ini && \
-    echo "mysqli.default_socket=/run/mysqld/mysqld.sock" > /usr/local/etc/php/conf.d/mysqli.ini && \
-    echo "memory_limit=1G" > /usr/local/etc/php/conf.d/memory.ini
+COPY rootfs / 
 
-RUN mkdir /run/mysqld/ && chown -R mysql:mysql /run/mysqld/ && /usr/bin/mysqld --basedir=/usr --datadir=/var/lib/mysql --plugin-dir=/usr/lib/mysql/plugin --user=mysql & sleep 2 && \
-    mysql -e "CREATE DATABASE shopware" && \
+RUN /usr/bin/mysqld --basedir=/usr --datadir=/var/lib/mysql --plugin-dir=/usr/lib/mysql/plugin --user=mysql & sleep 2 && \
     mysqladmin --user=root password 'root' && \
     cd /var/www/shop/ && \
-    php /var/www/shop/public/recovery/install/index.php --shop-host localhost --db-host localhost --db-socket /run/mysqld/mysqld.sock  --db-user root --db-password root --db-name shopware --shop-locale en-GB --shop-currency EUR --admin-username demo  --admin-password demo --admin-email demo@foo.com --admin-locale en-GB --admin-firstname demo --admin-lastname demo -n && \
-
-    wget https://www.shopware.com/de/Download/redirect/version/sw6/file/update_6.2.2_1592398977.zip && \
-    unzip -o update_6.2.2_1592398977.zip && \
-    php /var/www/shop/public/recovery/update/index.php -n && \
-    rm -rf update-assets && \
-
-    wget https://www.shopware.com/de/Download/redirect/version/sw6/file/update_6.2.3_1594641397.zip && \
-    unzip -o update_6.2.3_1594641397.zip && \
-    php /var/www/shop/public/recovery/update/index.php -n && \
-    rm -rf update-assets && \
-
-    wget https://www.shopware.com/de/Download/redirect/version/sw6/file/update_v6.3.0.0_83857c5fb3cde7fc77392d843c45d95b661c36a8.zip && \
-    unzip -o update_v6.3.0.0_83857c5fb3cde7fc77392d843c45d95b661c36a8.zip && \
-    php /var/www/shop/public/recovery/update/index.php -n && \
-    rm -rf update-assets && \
-
-    wget https://www.shopware.com/de/Download/redirect/version/sw6/file/update_v6.3.0.1_8c1c2d2a8fa041a354e77305901ad4597717e756.zip && \
-    unzip -o update_v6.3.0.1_8c1c2d2a8fa041a354e77305901ad4597717e756.zip && \
-    php /var/www/shop/public/recovery/update/index.php -n && \
-    rm -rf update-assets && \
-    rm update*.zip && \
-
-    wget https://releases.shopware.com/sw6/update_v6.3.1.0_363abad22982da639888b36d84d52730e8dc05e6.zip && \
-    unzip -o update_v6.3.1.0_363abad22982da639888b36d84d52730e8dc05e6.zip && \
-    php /var/www/shop/public/recovery/update/index.php -n && \
-    rm -rf update-assets && \
-    rm update*.zip && \
-
-    php /var/www/shop/bin/console framework:demodata -p 3000 && \
-    php /var/www/shop/bin/console dal:refresh:index && \
+    wget -qq $SHOPWARE_DL && \
+    unzip -qq *.zip && \
+    rm *.zip && \
+    php bin/console system:install --create-database --force && \
+    php bin/console system:generate-jwt-secret && \
+    php /fix-install.php && \
+    php bin/console user:create "demo" --admin --password="demo" -n && \
+    php bin/console sales-channel:create:storefront --name=Storefront --url="http://localhost/shop/public" && \
+    php bin/console theme:change --all Storefront && \
     mysql shopware -e "INSERT INTO system_config (id, configuration_key, configuration_value, sales_channel_id, created_at, updated_at) VALUES (X'b3ae4d7111114377af9480c4a0911111', 'core.frw.completedAt', '{\"_value\": \"2019-10-07T10:46:23+00:00\"}', NULL, '2019-10-07 10:46:23.169', NULL);" && \
-    php /var/www/shop/bin/console theme:refresh && \
-    php /var/www/shop/bin/console theme:change Storefront --all && \
-    chown -R 1000:1000 /var/www
+    chown -R 1000 /var/www/shop
 
-COPY fix-language.php /
-RUN /usr/bin/mysqld --basedir=/usr --datadir=/var/lib/mysql --plugin-dir=/usr/lib/mysql/plugin --user=mysql & sleep 2 && \
-    php /fix-language.php
+COPY --chown=1000:1000 SwagI18nDutch /var/www/shop/custom/plugins/SwagI18nDutch
+STOPSIGNAL SIGKILL
 
-COPY entrypoint.sh /entrypoint.sh
-COPY SwagI18nDutch /var/www/shop/custom/plugins/SwagI18nDutch
-COPY www.conf /etc/nginx/sites-enabled/www.conf
+ENTRYPOINT ["/entrypoint.sh"]
 
-CMD ["/bin/sh", "/entrypoint.sh"]
+HEALTHCHECK --timeout=10s CMD curl --silent --fail http://127.0.0.1:80/shop/public/admin

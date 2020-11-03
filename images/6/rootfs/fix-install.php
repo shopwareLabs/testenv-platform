@@ -2,20 +2,12 @@
 
 require_once '/var/www/shop/vendor/autoload.php';
 
-use Symfony\Component\Dotenv\Dotenv;
 use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\FetchMode;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Language\Exception\LanguageNotFoundException;
-
-$envFile = '/var/www/shop/.env';
-
-if (class_exists(Dotenv::class) && is_readable($envFile) && !is_dir($envFile)) {
-    (new Dotenv(true))->load($envFile);
-}
-
 
 $params = parse_url(getenv('DATABASE_URL'));
 $dbName = substr($params['path'], 1);
@@ -32,6 +24,22 @@ $parameters = [
     'url' => $dsnWithoutDb,
     'charset' => 'utf8mb4',
 ];
+
+if (isset($_ENV['DATABASE_SSL_CA'])) {
+    $parameters['driverOptions'][\PDO::MYSQL_ATTR_SSL_CA] = $_ENV['DATABASE_SSL_CA'];
+}
+
+if (isset($_ENV['DATABASE_SSL_CERT'])) {
+    $parameters['driverOptions'][\PDO::MYSQL_ATTR_SSL_CERT] = $_ENV['DATABASE_SSL_CERT'];
+}
+
+if (isset($_ENV['DATABASE_SSL_KEY'])) {
+    $parameters['driverOptions'][\PDO::MYSQL_ATTR_SSL_KEY] = $_ENV['DATABASE_SSL_KEY'];
+}
+
+if (isset($_ENV['DATABASE_SSL_DONT_VERIFY_SERVER_CERT'])) {
+    $parameters['driverOptions'][\PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
+}
 
 $connection = DriverManager::getConnection($parameters, new Configuration());
 $connection->exec('USE `' . $dbName . '`');
@@ -204,7 +212,7 @@ class LocaleAndCurrencySwapper
             (?,?,UNHEX(?),UNHEX(?), ?)'
         );
 
-        $stmt->execute([$id, $name, $localeId, $localeId, date('Y-m-d H:i:s.v')]);
+        $stmt->execute([$id, $name, $localeId, $localeId, (new \DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT)]);
 
         return $id;
     }
@@ -310,4 +318,5 @@ class LocaleAndCurrencySwapper
 }
 
 $fixer = new LocaleAndCurrencySwapper($connection);
-$fixer->setDefaultLanguage('nl-NL');
+$fixer->setDefaultCurrency(getenv('INSTALL_CURRENCY'));
+$fixer->setDefaultLanguage(getenv('INSTALL_LOCALE'));
