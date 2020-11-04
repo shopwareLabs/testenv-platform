@@ -22,11 +22,6 @@ func CreateEnvironment(w http.ResponseWriter, r *http.Request, ps httprouter.Par
 	id := randSeq(5)
 	request, err := getPluginInformationFromRequest(id, r)
 
-	// @todo: Quick-Fix. Remove until its fixed in SBP
-	if request != nil && request.InstallVersion == "6.3.4.0" {
-		request.InstallVersion = "6.3.3.0"
-	}
-
 	if err != nil {
 		apiResponse(w, ApiResponse{Success: false, Message: fmt.Sprintf("%s", err)}, http.StatusInternalServerError)
 		return

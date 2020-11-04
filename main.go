@@ -15,11 +15,6 @@ func main() {
 	router.POST("/environments", handler.CreateEnvironment)
 	router.DELETE("/environments", handler.DeleteContainer)
 
-	// Remove when SBP has fixed the link :(
-	router.GET("/index.php", handler.ListContainer)
-	router.POST("/index.php", handler.CreateEnvironment)
-	router.DELETE("/index.php", handler.DeleteContainer)
-
 	log.Println("Go!")
 	log.Fatal(http.ListenAndServe("0.0.0.0:8080", router))
 }
