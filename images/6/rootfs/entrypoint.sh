@@ -2,6 +2,10 @@
 
 /usr/bin/mysqld --basedir=/usr --datadir=/var/lib/mysql --plugin-dir=/usr/lib/mysql/plugin --user=mysql &
 
+unset APP_ENV
+echo "APP_ENV=prod" > /var/www/shop/.env
+chown -R 1000 /var/www/shop/.env
+
 while ! mysqladmin ping --silent; do
     sleep 1
 done
