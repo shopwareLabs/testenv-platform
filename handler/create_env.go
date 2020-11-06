@@ -12,8 +12,10 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 )
@@ -23,15 +25,19 @@ func CreateEnvironment(w http.ResponseWriter, r *http.Request, ps httprouter.Par
 	request, err := getPluginInformationFromRequest(id, r)
 
 	if err != nil {
+		log.Printf("%s", err)
 		apiResponse(w, ApiResponse{Success: false, Message: fmt.Sprintf("%s", err)}, http.StatusInternalServerError)
 		return
 	}
+
+	log.Printf("Requested environment for version: %s and plugin: %s", request.InstallVersion, request.Name)
 
 	instanceName := fmt.Sprintf("%s-%s", request.Name, id)
 	host := strings.ToLower(fmt.Sprintf("%s.%s", instanceName, os.Getenv("BASE_HOST")))
 
 	imageName, err := getImage(request)
 	if err != nil {
+		log.Printf("%s", err)
 		apiResponse(w, ApiResponse{Success: false, Message: fmt.Sprintf("%s", err)}, http.StatusInternalServerError)
 		return
 	}
@@ -63,6 +69,7 @@ func CreateEnvironment(w http.ResponseWriter, r *http.Request, ps httprouter.Par
 	cBody, err := dClient.ContainerCreate(ctx, cConfig, cHost, cNetwork, instanceName)
 
 	if err != nil {
+		log.Printf("%s", err)
 		apiResponse(w, ApiResponse{Success: false, Message: fmt.Sprintf("%s", err)}, http.StatusInternalServerError)
 		return
 	}
@@ -70,6 +77,7 @@ func CreateEnvironment(w http.ResponseWriter, r *http.Request, ps httprouter.Par
 	err = dClient.ContainerStart(ctx, cBody.ID, types.ContainerStartOptions{})
 
 	if err != nil {
+		log.Printf("%s", err)
 		apiResponse(w, ApiResponse{Success: false, Message: fmt.Sprintf("%s", err)}, http.StatusInternalServerError)
 		return
 	}
@@ -116,6 +124,10 @@ func getPluginInformationFromRequest(id string, r *http.Request) (*PluginInforma
 	}
 
 	result.Name = strings.TrimRight(zipReader.File[0].Name, "/")
+
+	if strings.Contains(result.Name, "/") {
+		result.Name = path.Dir(result.Name)
+	}
 
 	if result.Name == "Backend" || result.Name == "Core" || result.Name == "Frontend" {
 		result.MountFolder = "engine/Shopware/Plugins/Local/"
