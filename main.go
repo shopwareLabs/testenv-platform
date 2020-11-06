@@ -8,6 +8,8 @@ import (
 )
 
 func main() {
+	go PullImageUpdatesTask()
+
 	router := httprouter.New()
 
 	// New Routes
