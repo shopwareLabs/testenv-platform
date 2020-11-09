@@ -44,7 +44,3 @@ func apiResponse(w http.ResponseWriter, aResp interface{}, statusCode int) {
 	w.WriteHeader(statusCode)
 	_, _ = w.Write(res)
 }
-
-func GetDocker() *client.Client {
-	return dClient
-}

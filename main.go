@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	go PullImageUpdatesTask()
+	go handler.PullImageUpdatesTask()
 
 	router := httprouter.New()
 

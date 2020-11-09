@@ -24,12 +24,12 @@ Password: `demo`
 
 ## API
 
-### GET /
+### GET /environments
 
 Returns all running containers
 
 
-### POST /
+### POST /environments
 
 JSON Request:
 
@@ -50,7 +50,7 @@ Response
 }
 ```
 
-### DELETE /?id=dockerId
+### DELETE /environments?id=dockerId
 
 Response
 

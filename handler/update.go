@@ -1,16 +1,26 @@
-package main
+package handler
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/docker/docker/api/types"
-	"github.com/shopwareLabs/testenv-platform/handler"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"time"
 )
+
+var newestShopwareVersion = ""
+
+func getNewestShopwareImage() string {
+	// @todo: Implement https://github.com/hashicorp/go-version
+	//if len(newestShopwareVersion) == 0 {
+	return "shopware/testenv:6.3.3"
+	//}
+
+	//return newestShopwareVersion
+}
 
 func PullImageUpdatesTask() {
 	for {
@@ -20,8 +30,6 @@ func PullImageUpdatesTask() {
 }
 
 func PullImageUpdates() {
-	client := handler.GetDocker()
-
 	resp, err := http.Get("https://hub.docker.com/v2/repositories/shopware/testenv/tags/?page_size=25&page=1")
 	if err != nil {
 		log.Println(err)
@@ -45,9 +53,13 @@ func PullImageUpdates() {
 	}
 
 	for _, tag := range dockerHubResponse.Results {
+		if len(newestShopwareVersion) == 0 {
+			newestShopwareVersion = tag.Name
+		}
+
 		imageName := fmt.Sprintf("docker.io/shopware/testenv:%s", tag.Name)
 		log.Printf("Pullling image %s", imageName)
-		outputReader, err := client.ImagePull(context.Background(), imageName, types.ImagePullOptions{})
+		outputReader, err := dClient.ImagePull(context.Background(), imageName, types.ImagePullOptions{})
 
 		if err != nil {
 			log.Println(err)

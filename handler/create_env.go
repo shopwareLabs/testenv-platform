@@ -32,7 +32,7 @@ func CreateEnvironment(w http.ResponseWriter, r *http.Request, ps httprouter.Par
 
 	log.Printf("Requested environment for version: %s and plugin: %s", request.InstallVersion, request.Name)
 
-	instanceName := fmt.Sprintf("%s-%s", request.Name, id)
+	instanceName := strings.ToLower(fmt.Sprintf("%s-%s", request.Name, id))
 	host := strings.ToLower(fmt.Sprintf("%s.%s", instanceName, os.Getenv("BASE_HOST")))
 
 	imageName, err := getImage(request)
@@ -129,7 +129,9 @@ func getPluginInformationFromRequest(id string, r *http.Request) (*PluginInforma
 		result.Name = path.Dir(result.Name)
 	}
 
-	if result.Name == "Backend" || result.Name == "Core" || result.Name == "Frontend" {
+	if env.InstallVersion == "app" {
+		result.MountFolder = "custom/apps/"
+	} else if result.Name == "Backend" || result.Name == "Core" || result.Name == "Frontend" {
 		result.MountFolder = "engine/Shopware/Plugins/Local/"
 	} else {
 		result.MountFolder = "custom/plugins/"
@@ -197,6 +199,10 @@ func Unzip(r *zip.Reader, dest string) error {
 }
 
 func getImage(info *PluginInformation) (string, error) {
+	if info.InstallVersion == "app" {
+		return getNewestShopwareImage(), nil
+	}
+
 	var v1, v2, v3 int
 	var imageTag string
 
