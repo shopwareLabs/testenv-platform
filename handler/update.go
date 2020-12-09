@@ -16,7 +16,7 @@ var newestShopwareVersion = ""
 func getNewestShopwareImage() string {
 	// @todo: Implement https://github.com/hashicorp/go-version
 	//if len(newestShopwareVersion) == 0 {
-	return "shopware/testenv:6.3.3"
+	return "shopware/testenv:6.3.4"
 	//}
 
 	//return newestShopwareVersion
