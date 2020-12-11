@@ -5,21 +5,22 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/docker/docker/api/types"
+	"github.com/hashicorp/go-version"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"sort"
 	"time"
 )
 
 var newestShopwareVersion = ""
 
 func getNewestShopwareImage() string {
-	// @todo: Implement https://github.com/hashicorp/go-version
-	//if len(newestShopwareVersion) == 0 {
-	return "shopware/testenv:6.3.4"
-	//}
+	if len(newestShopwareVersion) == 0 {
+		return "shopware/testenv:6.3.4"
+	}
 
-	//return newestShopwareVersion
+	return newestShopwareVersion
 }
 
 func PullImageUpdatesTask() {
@@ -52,10 +53,11 @@ func PullImageUpdates() {
 		return
 	}
 
-	for _, tag := range dockerHubResponse.Results {
-		if len(newestShopwareVersion) == 0 {
-			newestShopwareVersion = tag.Name
-		}
+	versions := make([]*version.Version, len(dockerHubResponse.Results))
+
+	for i, tag := range dockerHubResponse.Results {
+		v, _ := version.NewVersion(tag.Name)
+		versions[i] = v
 
 		imageName := fmt.Sprintf("docker.io/shopware/testenv:%s", tag.Name)
 		log.Printf("Pullling image %s", imageName)
@@ -68,6 +70,9 @@ func PullImageUpdates() {
 		text, _ := ioutil.ReadAll(outputReader)
 		fmt.Println(string(text))
 	}
+
+	sort.Sort(version.Collection(versions))
+	newestShopwareVersion = versions[len(versions)-1].String()
 }
 
 type DockerHubTagsResponse struct {

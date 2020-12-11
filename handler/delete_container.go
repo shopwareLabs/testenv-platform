@@ -22,6 +22,7 @@ func DeleteContainer(w http.ResponseWriter, r *http.Request, _ httprouter.Params
 	}
 
 	id := string(keys[0])
+	log.Printf("Requested deletion of container: %s", id)
 
 	container, err := dClient.ContainerInspect(ctx, id)
 
@@ -49,7 +50,7 @@ func DeleteContainer(w http.ResponseWriter, r *http.Request, _ httprouter.Params
 	}
 }
 
-func deleteResponse(w http.ResponseWriter)  {
+func deleteResponse(w http.ResponseWriter) {
 	res, _ := json.Marshal(map[string]bool{"success": true})
 
 	w.Header().Set("Content-Type", "application/json")
