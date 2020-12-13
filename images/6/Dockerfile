@@ -24,7 +24,8 @@ ENV TZ=Europe/Berlin \
     FPM_PM_MAX_SPARE_SERVERS=3 \
     PHP_MAX_UPLOAD_SIZE=128m \
     PHP_MAX_EXECUTION_TIME=300 \
-    PHP_MEMORY_LIMIT=512m
+    PHP_MEMORY_LIMIT=512m \
+    LD_PRELOAD="/usr/lib/preloadable_libiconv.so php"
 
 COPY --from=ochinchina/supervisord:latest /usr/local/bin/supervisord /usr/bin/supervisord
 COPY --from=composer /usr/bin/composer /usr/local/bin/composer
@@ -56,7 +57,8 @@ RUN apk add --no-cache \
     chown -R www-data:www-data /var/www && \
     usermod -u 1000 www-data && \
     mysql_install_db --datadir=/var/lib/mysql --user=mysql && \
-    mkdir /run/mysqld/ && chown -R mysql:mysql /run/mysqld/
+    mkdir /run/mysqld/ && chown -R mysql:mysql /run/mysqld/ && \
+    apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/community gnu-libiconv
 
 ARG SHOPWARE_DL=https://www.shopware.com/de/Download/redirect/version/sw6/file/install_6.2.0_1589874223.zip
 
