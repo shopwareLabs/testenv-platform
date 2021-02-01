@@ -58,7 +58,7 @@ RUN apk add --no-cache \
     usermod -u 1000 www-data && \
     mysql_install_db --datadir=/var/lib/mysql --user=mysql && \
     mkdir /run/mysqld/ && chown -R mysql:mysql /run/mysqld/ && \
-    apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/community gnu-libiconv
+    apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/v3.13/community gnu-libiconv
 
 ARG SHOPWARE_DL=https://www.shopware.com/de/Download/redirect/version/sw6/file/install_6.2.0_1589874223.zip
 
