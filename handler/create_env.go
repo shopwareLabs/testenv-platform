@@ -15,7 +15,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"path"
 	"path/filepath"
 	"strings"
 )
@@ -123,11 +122,9 @@ func getPluginInformationFromRequest(id string, r *http.Request) (*PluginInforma
 		return nil, fmt.Errorf("Zip is empty")
 	}
 
-	result.Name = strings.TrimRight(zipReader.File[0].Name, "/")
+	names := strings.Split(zipReader.File[0].Name, "/")
 
-	if strings.Contains(result.Name, "/") {
-		result.Name = path.Dir(result.Name)
-	}
+	result.Name = names[0]
 
 	if env.InstallVersion == "app" {
 		result.MountFolder = "custom/apps/"
