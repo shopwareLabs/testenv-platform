@@ -43,7 +43,7 @@ RUN apk add --no-cache \
       mysql \
       mysql-client \
       git && \
-    install-php-extensions bcmath gd intl mysqli pdo_mysql sockets bz2 gmp soap zip gmp ffi redis opcache && \
+    install-php-extensions bcmath gd intl mysqli pdo_mysql sockets bz2 gmp soap zip gmp ffi redis opcache calendar && \
     ln -s /usr/local/bin/php /usr/bin/php && \
     ln -sf /dev/stdout /var/log/nginx/access.log && \
     ln -sf /dev/stderr /var/log/nginx/error.log && \
