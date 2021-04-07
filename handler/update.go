@@ -4,13 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/docker/docker/api/types"
-	"github.com/hashicorp/go-version"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"sort"
 	"time"
+
+	"github.com/docker/docker/api/types"
+	"github.com/hashicorp/go-version"
 )
 
 var newestShopwareVersion = ""
@@ -72,7 +73,7 @@ func PullImageUpdates() {
 	}
 
 	sort.Sort(version.Collection(versions))
-	newestShopwareVersion = versions[len(versions)-1].String()
+	newestShopwareVersion = fmt.Sprintf("shopware/testenv:%s", versions[len(versions)-1].String())
 }
 
 type DockerHubTagsResponse struct {
