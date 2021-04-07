@@ -5,41 +5,28 @@ async function main() {
 
     console.log(releases);
 
+    const ghConfig = {
+        'fail-fast': false,
+        matrix: {
+            include: [] as any
+        }
+    };
+
     // Build
     for (let release of releases) {
         for (let tag of release.tags) {
             for (let imageName of release.imageNames) {
-                let process = Deno.run({
-                    cmd: ['docker', 'build', '-t', `${imageName}:${tag}`, '--build-arg', `SHOPWARE_DL=${release.download}`, '.'],
-                    stdout: 'inherit'
+                ghConfig.matrix.include.push({
+                    name: `Shopware ${tag}`,
+                    runs: {
+                        build: `cd images/6; docker buildx build --platform linux/amd64 --build-arg SHOPWARE_DL=${release.download} --build-arg SHOPWARE_VERSION=${release.version} --tag ${imageName}:${tag} --push .`
+                    }
                 });
-    
-                const {success} = await process.status();
-    
-                if (!success) {
-                    Deno.exit(-1);
-                }
             }
         }
     }
 
-    // Push
-    for (let release of releases) {
-        for (let tag of release.tags) {
-            for (let imageName of release.imageNames) {
-                let process = Deno.run({
-                    cmd: ['docker', 'push', `${imageName}:${tag}`],
-                    stdout: 'inherit'
-                });
-
-                const {success} = await process.status();
-
-                if (!success) {
-                    Deno.exit(-1);
-                }
-            }
-        }
-    }
+    await Deno.stdout.write(new TextEncoder().encode(JSON.stringify(ghConfig)));
 }
 
 function getMajorVersion(version: string) {
@@ -55,7 +42,7 @@ function getMajorVersion(version: string) {
 main();
 
 async function getReleases() {
-    let json = await (await fetch('https://update-api.shopware.com/v1/releases/install?major=6')).json();
+    let json = await (await fetch('https://update-api.shopware.com/v1/releases/install?major=6&channel=rc')).json();
     let releases = [];
     let givenTags: string[] = [];
 
