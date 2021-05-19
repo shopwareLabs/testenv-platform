@@ -84,6 +84,7 @@ RUN /usr/bin/mysqld --basedir=/usr --datadir=/var/lib/mysql --plugin-dir=/usr/li
 EXPOSE 80
 
 COPY --chown=1000:1000 SwagI18nDutch /var/www/shop/custom/plugins/SwagI18nDutch
+COPY --chown=1000:1000 SwagDemoProducts /var/www/shop/custom/plugins/SwagDemoProducts
 STOPSIGNAL SIGKILL
 
 ENTRYPOINT ["/entrypoint.sh"]

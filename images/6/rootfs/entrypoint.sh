@@ -15,6 +15,6 @@ mysql -proot shopware -e "UPDATE sales_channel_domain set url = 'http://${VIRTUA
 sudo -u www-data git clone https://github.com/FriendsOfShopware/FroshPlatformAdminer.git /var/www/shop/custom/plugins/FroshPlatformAdminer --depth=1
 sudo -E -u www-data /var/www/shop/bin/console plugin:refresh
 rm -rf /var/www/shop/var/cache/* || true
-sudo -E -u www-data /var/www/shop/bin/console plugin:install -n --activate FroshPlatformAdminer SwagI18nDutch
+sudo -E -u www-data /var/www/shop/bin/console plugin:install -n --activate FroshPlatformAdminer SwagI18nDutch SwagDemoProducts
 
 /usr/bin/supervisord -c /etc/supervisord.conf
