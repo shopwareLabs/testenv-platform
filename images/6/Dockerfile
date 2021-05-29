@@ -62,7 +62,8 @@ RUN apk add --no-cache \
 
 ARG SHOPWARE_DL=https://www.shopware.com/de/Download/redirect/version/sw6/file/install_6.2.0_1589874223.zip
 
-COPY rootfs / 
+COPY rootfs/fix-install.php /fix-install.php
+COPY rootfs/usr /usr
 
 RUN /usr/bin/mysqld --basedir=/usr --datadir=/var/lib/mysql --plugin-dir=/usr/lib/mysql/plugin --user=mysql & sleep 2 && \
     mysqladmin --user=root password 'root' && \
@@ -80,10 +81,11 @@ RUN /usr/bin/mysqld --basedir=/usr --datadir=/var/lib/mysql --plugin-dir=/usr/li
     php /fix-install.php && \
     mysql shopware -e "INSERT INTO system_config (id, configuration_key, configuration_value, sales_channel_id, created_at, updated_at) VALUES (X'b3ae4d7111114377af9480c4a0911111', 'core.frw.completedAt', '{\"_value\": \"2019-10-07T10:46:23+00:00\"}', NULL, '2019-10-07 10:46:23.169', NULL);" && \
     chown -R 1000 /var/www/shop
+
+COPY rootfs /
     
 EXPOSE 80
 
-COPY --chown=1000:1000 SwagI18nDutch /var/www/shop/custom/plugins/SwagI18nDutch
 COPY --chown=1000:1000 SwagDemoProducts /var/www/shop/custom/plugins/SwagDemoProducts
 STOPSIGNAL SIGKILL
 

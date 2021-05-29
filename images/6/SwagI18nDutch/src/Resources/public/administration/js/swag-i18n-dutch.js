@@ -1,1 +1,0 @@
-(this.webpackJsonp=this.webpackJsonp||[]).push([["swag-i18n-dutch"],{GE09:function(e,n,t){"use strict";t.r(n);t("IYTb")},IYTb:function(e,n){!1===Shopware.Locale.getByName("nl-NL")&&Shopware.Locale.register("nl-NL",{})}},[["GE09","runtime"]]]);

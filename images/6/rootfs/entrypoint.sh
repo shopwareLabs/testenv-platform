@@ -13,8 +13,19 @@ done
 mysql -proot shopware -e "UPDATE sales_channel_domain set url = 'http://${VIRTUAL_HOST}/shop/public' limit 1"
 
 sudo -u www-data git clone https://github.com/FriendsOfShopware/FroshPlatformAdminer.git /var/www/shop/custom/plugins/FroshPlatformAdminer --depth=1
-sudo -E -u www-data /var/www/shop/bin/console plugin:refresh
 rm -rf /var/www/shop/var/cache/* || true
-sudo -E -u www-data /var/www/shop/bin/console plugin:install -n --activate FroshPlatformAdminer SwagI18nDutch SwagDemoProducts
+
+
+if sudo -E -u www-data /var/www/shop/bin/console store:download -p SwagI18nDutch; then
+    sudo -E -u www-data /var/www/shop/bin/console plugin:refresh
+    sudo -E -u www-data /var/www/shop/bin/console plugin:install -n --activate SwagI18nDutch
+else
+    sudo -E -u www-data /var/www/shop/bin/console store:download -p SwagLanguagePack
+    sudo -E -u www-data /var/www/shop/bin/console plugin:refresh
+    sudo -E -u www-data /var/www/shop/bin/console plugin:install -n --activate SwagLanguagePack
+fi
+
+
+sudo -E -u www-data /var/www/shop/bin/console plugin:install -n --activate FroshPlatformAdminer SwagDemoProducts
 
 /usr/bin/supervisord -c /etc/supervisord.conf
