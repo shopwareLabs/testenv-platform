@@ -40,8 +40,8 @@ RUN apk add --no-cache \
       bash \
       patch \
       jq \
-      mysql \
-      mysql-client \
+      mysql=10.5.9-r0 \
+      mysql-client=10.5.9-r0 \
       git && \
     install-php-extensions bcmath gd intl mysqli pdo_mysql sockets bz2 gmp soap zip gmp ffi redis opcache calendar && \
     ln -s /usr/local/bin/php /usr/bin/php && \
