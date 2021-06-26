@@ -49,7 +49,7 @@ RUN apk add --no-cache \
     ln -sf /dev/stderr /var/log/nginx/error.log && \
     rm -rf /var/lib/nginx/tmp && \
     ln -sf /tmp /var/lib/nginx/tmp && \
-    mkdir -p /var/tmp/nginx/ || true && \
+    mkdir -p /var/tmp/nginx/ && \
     chown -R www-data:www-data /var/lib/nginx /var/tmp/nginx/ && \
     chmod 777 -R /var/tmp/nginx/ && \
     rm -rf /tmp/* && \
