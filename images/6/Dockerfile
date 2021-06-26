@@ -40,8 +40,8 @@ RUN apk add --no-cache \
       bash \
       patch \
       jq \
-      mariadb=10.5.9-r0 \
-      mariadb-client=10.5.9-r0 \
+      mariadb \
+      mariadb-client \
       git && \
     install-php-extensions bcmath gd intl mysqli pdo_mysql sockets bz2 gmp soap zip gmp ffi redis opcache calendar && \
     ln -s /usr/local/bin/php /usr/bin/php && \
