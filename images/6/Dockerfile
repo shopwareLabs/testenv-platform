@@ -30,6 +30,7 @@ ENV TZ=Europe/Berlin \
 COPY --from=ochinchina/supervisord:latest /usr/local/bin/supervisord /usr/bin/supervisord
 COPY --from=composer /usr/bin/composer /usr/local/bin/composer
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/bin/
+COPY --from=ghcr.io/shyim/gnu-libiconv:v3.14 /gnu-libiconv-1.15-r3.apk /gnu-libiconv-1.15-r3.apk
 
 RUN apk add --no-cache \
       nginx \
@@ -43,6 +44,7 @@ RUN apk add --no-cache \
       mariadb \
       mariadb-client \
       git && \
+    apk add --no-cache --allow-untrusted /gnu-libiconv-1.15-r3.apk && rm /gnu-libiconv-1.15-r3.apk && \
     install-php-extensions bcmath gd intl mysqli pdo_mysql sockets bz2 gmp soap zip gmp ffi redis opcache calendar && \
     ln -s /usr/local/bin/php /usr/bin/php && \
     ln -sf /dev/stdout /var/log/nginx/access.log && \
@@ -57,8 +59,7 @@ RUN apk add --no-cache \
     chown -R www-data:www-data /var/www && \
     usermod -u 1000 www-data && \
     mysql_install_db --datadir=/var/lib/mysql --user=mysql && \
-    mkdir /run/mysqld/ && chown -R mysql:mysql /run/mysqld/ && \
-    apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/v3.13/community gnu-libiconv
+    mkdir /run/mysqld/ && chown -R mysql:mysql /run/mysqld/
 
 ARG SHOPWARE_DL=https://www.shopware.com/de/Download/redirect/version/sw6/file/install_6.2.0_1589874223.zip
 
