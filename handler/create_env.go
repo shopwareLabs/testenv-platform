@@ -190,6 +190,11 @@ func Unzip(r *zip.Reader, dest string) error {
 		if err != nil {
 			return err
 		}
+
+		err = os.Chown(fpath, 1000, 1000)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
