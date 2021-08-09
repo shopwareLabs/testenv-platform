@@ -65,7 +65,7 @@ func CreateEnvironment(w http.ResponseWriter, r *http.Request, ps httprouter.Par
 		},
 	}
 
-	cBody, err := dClient.ContainerCreate(ctx, cConfig, cHost, cNetwork, instanceName)
+	cBody, err := dClient.ContainerCreate(ctx, cConfig, cHost, cNetwork, nil, instanceName)
 
 	if err != nil {
 		log.Printf("%s", err)
