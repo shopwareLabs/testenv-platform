@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 /usr/bin/mysqld --basedir=/usr --datadir=/var/lib/mysql --plugin-dir=/usr/lib/mysql/plugin --user=mysql &
 
@@ -13,8 +13,9 @@ done
 mysql -proot shopware -e "UPDATE sales_channel_domain set url = 'http://${VIRTUAL_HOST}/shop/public' where url = 'http://localhost/shop/public'"
 
 sudo -u www-data git clone https://github.com/FriendsOfShopware/FroshPlatformAdminer.git /var/www/shop/custom/plugins/FroshPlatformAdminer --depth=1
-rm -rf /var/www/shop/var/cache/* || true
+sudo -u www-data git clone https://github.com/FriendsOfShopware/FroshTools.git /var/www/shop/custom/plugins/FroshTools --depth=1
 
+rm -rf /var/www/shop/var/cache/* || true
 
 if sudo -E -u www-data /var/www/shop/bin/console store:download -p SwagI18nDutch; then
     sudo -E -u www-data /var/www/shop/bin/console plugin:refresh
@@ -27,5 +28,10 @@ fi
 
 
 sudo -E -u www-data /var/www/shop/bin/console plugin:install -n --activate FroshPlatformAdminer SwagDemoProducts
+sudo -E -u www-data /var/www/shop/bin/console plugin:install -n --activate FroshTools
+
+if [[ -n $SHOPWARE_DEMO_USER_PASSWORD ]]; then
+  sudo -E -u www-data /var/www/shop/bin/console frosh:user:change:password demo "$SHOPWARE_DEMO_USER_PASSWORD"
+fi
 
 /usr/bin/supervisord -c /etc/supervisord.conf

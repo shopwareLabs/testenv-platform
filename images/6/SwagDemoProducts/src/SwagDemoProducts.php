@@ -7,6 +7,7 @@ use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Query\ScoreQuery;
 use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\Context\InstallContext;
 
@@ -20,8 +21,12 @@ class SwagDemoProducts extends Plugin
             ->searchIds((new Criteria())->addFilter(new EqualsFilter('typeId', Defaults::SALES_CHANNEL_TYPE_STOREFRONT)), $c)
             ->firstId();
 
+        $categoryCriteria = new Criteria();
+        $categoryCriteria->addQuery(new ScoreQuery(new EqualsFilter('name', 'Industrial & Books'), 1000));
+        $categoryCriteria->setLimit(2);
+
         $categoryId = $this->container->get('category.repository')
-            ->searchIds((new Criteria())->addFilter(new EqualsFilter('name', 'Industrial & Books')), $c)
+            ->searchIds($categoryCriteria, $c)
             ->firstId();
 
         $taxId = $this->container->get('tax.repository')
@@ -61,5 +66,4 @@ class SwagDemoProducts extends Plugin
             Context::createDefaultContext()
         );
     }
-
 }

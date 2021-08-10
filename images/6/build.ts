@@ -46,14 +46,14 @@ async function getReleases() {
 
 
     for (let release of json) {
+        const majorVersion = getMajorVersion(release.version);
+
         try {
-            if (semver.lt(release.version, '6.3.0')) {
+            if (semver.lt(majorVersion, '6.4.0')) {
                 continue;
             }
         } catch (e) {
         }
-
-        const majorVersion = getMajorVersion(release.version);
 
         if (!givenTags.includes(majorVersion)) {
             release.version = majorVersion;
