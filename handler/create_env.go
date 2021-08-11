@@ -49,8 +49,10 @@ func CreateEnvironment(w http.ResponseWriter, r *http.Request, ps httprouter.Par
 			fmt.Sprintf("APP_URL=%s", fmt.Sprintf("http://%s/shop/public", host)),
 		},
 		Labels: map[string]string{
-			"testenv":               "1",
-			"traefik.frontend.rule": fmt.Sprintf("Host: %s", host),
+			"testenv":        "1",
+			"traefik.enable": "true",
+			fmt.Sprintf("traefik.http.routers.%s.rule", instanceName):        fmt.Sprintf("Host(`%s`)", host),
+			fmt.Sprintf("traefik.http.routers.%s.entrypoints", instanceName): "web",
 		},
 	}
 

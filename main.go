@@ -12,6 +12,8 @@ func main() {
 
 	router := httprouter.New()
 
+	router.GET("/", handler.Info)
+
 	// New Routes
 	router.GET("/environments", handler.ListContainer)
 	router.POST("/environments", handler.CreateEnvironment)

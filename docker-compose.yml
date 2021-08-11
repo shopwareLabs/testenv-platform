@@ -2,12 +2,17 @@ version: '2'
 
 services:
   traefik:
-    image: traefik:1.7
-    command: --docker
+    image: traefik:2.4
+    command:
+      - "--pilot.dashboard=false"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
     ports:
-      - 80:80
+      - "80:80"
   api:
     image: shopware/testenv-platform
     env_file: .env
@@ -18,11 +23,14 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /tmp:/tmp
     labels:
-      traefik.frontend.rule: "Host: ${BASE_HOST}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.rule=Host(`${BASE_HOST}`)"
+      - "traefik.http.routers.api.entrypoints=web"
+      - "traefik.http.services.api.loadbalancer.server.port=8080"
   mail:
-    image: djfarrelly/maildev
-    ports:
-    - 1080:80
+    image: ghcr.io/shyim/shopware-docker/mailhog:latest
     labels:
-      traefik.frontend.rule: "Host: mail.${BASE_HOST}"
-      traefik.port: '80'
+      - "traefik.enable=true"
+      - "traefik.http.routers.mail.rule=Host(`mail.${BASE_HOST}`)"
+      - "traefik.http.routers.mail.entrypoints=web"
+      - "traefik.http.services.mail.loadbalancer.server.port=8025"
