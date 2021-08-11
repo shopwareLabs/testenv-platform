@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace SwagDemoProducts;
+namespace SwagTestEnvironment;
 
 use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
 use Shopware\Core\Defaults;
@@ -11,7 +11,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Query\ScoreQuery;
 use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\Context\InstallContext;
 
-class SwagDemoProducts extends Plugin
+class SwagTestEnvironment extends Plugin
 {
     public function install(InstallContext $installContext): void
     {
@@ -28,6 +28,10 @@ class SwagDemoProducts extends Plugin
         $categoryId = $this->container->get('category.repository')
             ->searchIds($categoryCriteria, $c)
             ->firstId();
+
+        if ($categoryId === null) {
+            return;
+        }
 
         $taxId = $this->container->get('tax.repository')
             ->searchIds(new Criteria(), $c)

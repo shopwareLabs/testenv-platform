@@ -27,7 +27,7 @@ else
 fi
 
 
-sudo -E -u www-data /var/www/shop/bin/console plugin:install -n --activate FroshPlatformAdminer SwagDemoProducts
+sudo -E -u www-data /var/www/shop/bin/console plugin:install -n --activate FroshPlatformAdminer SwagTestEnvironment
 sudo -E -u www-data /var/www/shop/bin/console plugin:install -n --activate FroshTools
 
 if [[ -n $SHOPWARE_DEMO_USER_PASSWORD ]]; then
