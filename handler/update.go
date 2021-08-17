@@ -28,8 +28,6 @@ func PullImageUpdatesTask(token string) {
 	for {
 		PullImageUpdates(token)
 		time.Sleep(time.Hour * 24)
-
-		log.Println("Completed update task")
 	}
 }
 
@@ -96,6 +94,8 @@ func PullImageUpdates(token string) {
 
 	sort.Sort(version.Collection(versions))
 	newestShopwareVersion = fmt.Sprintf("ghcr.io/shopwarelabs/testenv:%s", versions[len(versions)-1].String())
+
+	log.Println("Completed update task")
 }
 
 type GithubApiResponse []struct {
