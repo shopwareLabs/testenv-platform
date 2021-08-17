@@ -24,15 +24,20 @@ func getNewestShopwareImage() string {
 	return newestShopwareVersion
 }
 
-func PullImageUpdatesTask() {
+func PullImageUpdatesTask(token string) {
 	for {
-		PullImageUpdates()
+		PullImageUpdates(token)
 		time.Sleep(time.Hour * 24)
 	}
 }
 
-func PullImageUpdates() {
-	resp, err := http.Get("https://hub.docker.com/v2/repositories/shopware/testenv/tags/?page_size=25&page=1")
+func PullImageUpdates(token string) {
+	client := &http.Client{}
+	req, _ := http.NewRequest("GET", "https://api.github.com/users/shopwareLabs/packages/container/testenv/versions", nil)
+	req.Header.Set("User-Agent", "shopware/testenv Client")
+	req.Header.Set("Authorization", fmt.Sprintf("token %s", token))
+
+	resp, err := client.Do(req)
 	if err != nil {
 		log.Println(err)
 		return
@@ -45,22 +50,24 @@ func PullImageUpdates() {
 		return
 	}
 
-	var dockerHubResponse DockerHubTagsResponse
+	var githubApiResponse GithubApiResponse
 
-	err = json.Unmarshal(respContent, &dockerHubResponse)
+	err = json.Unmarshal(respContent, &githubApiResponse)
 
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	versions := make([]*version.Version, len(dockerHubResponse.Results))
+	versions := make([]*version.Version, len(githubApiResponse))
 
-	for i, tag := range dockerHubResponse.Results {
-		v, _ := version.NewVersion(tag.Name)
+	for i, image := range githubApiResponse {
+		tag := image.Metadata.Container.Tags[0]
+
+		v, _ := version.NewVersion(tag)
 		versions[i] = v
 
-		imageName := fmt.Sprintf("docker.io/shopware/testenv:%s", tag.Name)
+		imageName := fmt.Sprintf("ghcr.io/shopwarelabs/testenv:%s", tag)
 		log.Printf("Pullling image %s", imageName)
 		outputReader, err := dClient.ImagePull(context.Background(), imageName, types.ImagePullOptions{})
 
@@ -76,36 +83,18 @@ func PullImageUpdates() {
 	newestShopwareVersion = fmt.Sprintf("shopware/testenv:%s", versions[len(versions)-1].String())
 }
 
-type DockerHubTagsResponse struct {
-	Count    int         `json:"count"`
-	Next     interface{} `json:"next"`
-	Previous interface{} `json:"previous"`
-	Results  []struct {
-		Creator int         `json:"creator"`
-		ID      int         `json:"id"`
-		ImageID interface{} `json:"image_id"`
-		Images  []struct {
-			Architecture string      `json:"architecture"`
-			Features     string      `json:"features"`
-			Variant      interface{} `json:"variant"`
-			Digest       string      `json:"digest"`
-			Os           string      `json:"os"`
-			OsFeatures   string      `json:"os_features"`
-			OsVersion    interface{} `json:"os_version"`
-			Size         int         `json:"size"`
-			Status       string      `json:"status"`
-			LastPulled   interface{} `json:"last_pulled"`
-			LastPushed   interface{} `json:"last_pushed"`
-		} `json:"images"`
-		LastUpdated         time.Time   `json:"last_updated"`
-		LastUpdater         int         `json:"last_updater"`
-		LastUpdaterUsername string      `json:"last_updater_username"`
-		Name                string      `json:"name"`
-		Repository          int         `json:"repository"`
-		FullSize            int         `json:"full_size"`
-		V2                  bool        `json:"v2"`
-		TagStatus           string      `json:"tag_status"`
-		TagLastPulled       interface{} `json:"tag_last_pulled"`
-		TagLastPushed       time.Time   `json:"tag_last_pushed"`
-	} `json:"results"`
+type GithubApiResponse []struct {
+	ID             int       `json:"id"`
+	Name           string    `json:"name"`
+	URL            string    `json:"url"`
+	PackageHTMLURL string    `json:"package_html_url"`
+	CreatedAt      time.Time `json:"created_at"`
+	UpdatedAt      time.Time `json:"updated_at"`
+	HTMLURL        string    `json:"html_url"`
+	Metadata       struct {
+		PackageType string `json:"package_type"`
+		Container   struct {
+			Tags []string `json:"tags"`
+		} `json:"container"`
+	} `json:"metadata"`
 }

@@ -221,7 +221,7 @@ func getImage(info *PluginInformation) (string, error) {
 		imageTag = fmt.Sprintf("%d.%d", v1, v2)
 	}
 
-	imageName := fmt.Sprintf("shopware/testenv:%s", imageTag)
+	imageName := fmt.Sprintf("ghcr.io/shopwarelabs/testenv:%s", imageTag)
 	opts := types.ImageListOptions{}
 	opts.Filters = filters.NewArgs()
 	opts.Filters.Add("before", imageName)
