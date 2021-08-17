@@ -18,7 +18,7 @@ var newestShopwareVersion = ""
 
 func getNewestShopwareImage() string {
 	if len(newestShopwareVersion) == 0 {
-		return "shopware/testenv:6.3.4"
+		return "ghcr.io/shopwarelabs/testenv:6.3.4"
 	}
 
 	return newestShopwareVersion
@@ -28,12 +28,14 @@ func PullImageUpdatesTask(token string) {
 	for {
 		PullImageUpdates(token)
 		time.Sleep(time.Hour * 24)
+
+		log.Println("Completed update task")
 	}
 }
 
 func PullImageUpdates(token string) {
 	client := &http.Client{}
-	req, _ := http.NewRequest("GET", "https://api.github.com/users/shopwareLabs/packages/container/testenv/versions", nil)
+	req, _ := http.NewRequest("GET", "https://api.github.com/users/shopwareLabs/packages/container/testenv/versions?per_page=100", nil)
 	req.Header.Set("User-Agent", "shopware/testenv Client")
 	req.Header.Set("Authorization", fmt.Sprintf("token %s", token))
 
@@ -59,9 +61,22 @@ func PullImageUpdates(token string) {
 		return
 	}
 
-	versions := make([]*version.Version, len(githubApiResponse))
+	versionCount := 0
+
+	for _, image := range githubApiResponse {
+		if len(image.Metadata.Container.Tags) == 0 {
+			continue
+		}
+		versionCount = versionCount + 1
+	}
+
+	versions := make([]*version.Version, versionCount)
 
 	for i, image := range githubApiResponse {
+		if len(image.Metadata.Container.Tags) == 0 {
+			continue
+		}
+
 		tag := image.Metadata.Container.Tags[0]
 
 		v, _ := version.NewVersion(tag)
@@ -80,7 +95,7 @@ func PullImageUpdates(token string) {
 	}
 
 	sort.Sort(version.Collection(versions))
-	newestShopwareVersion = fmt.Sprintf("shopware/testenv:%s", versions[len(versions)-1].String())
+	newestShopwareVersion = fmt.Sprintf("ghcr.io/shopwarelabs/testenv:%s", versions[len(versions)-1].String())
 }
 
 type GithubApiResponse []struct {
