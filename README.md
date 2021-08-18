@@ -12,7 +12,7 @@ The Adminer Plugin and App-System are preinstalled.
 ## Just running the Docker Container
 
 ```bash
-docker run --rm -p 80:80 -e VIRTUAL_HOST=localhost shopware/testenv:6.2
+docker run --rm -p 80:80 -e VIRTUAL_HOST=localhost ghcr.io/shopwarelabs/testenv:6.4.3
 ```
 
 Access shop at http://localhost/shop/public
