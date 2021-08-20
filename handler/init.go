@@ -6,6 +6,7 @@ import (
 	"github.com/docker/docker/client"
 	"math/rand"
 	"net/http"
+	"os"
 )
 
 var ctx context.Context
@@ -43,4 +44,11 @@ func apiResponse(w http.ResponseWriter, aResp interface{}, statusCode int) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
 	_, _ = w.Write(res)
+}
+
+func LookupEnvOrString(key string, defaultVal string) string {
+	if val, ok := os.LookupEnv(key); ok {
+		return val
+	}
+	return defaultVal
 }

@@ -47,6 +47,7 @@ func CreateEnvironment(w http.ResponseWriter, r *http.Request, ps httprouter.Par
 			fmt.Sprintf("PLUGIN_NAME=%s", request.Name),
 			fmt.Sprintf("VIRTUAL_HOST=%s", host),
 			fmt.Sprintf("APP_URL=%s", fmt.Sprintf("http://%s/shop/public", host)),
+			fmt.Sprintf("SHOPWARE_DEMO_USER_PASSWORD=%s", request.ShopwarePassword),
 		},
 		Labels: map[string]string{
 			"testenv":        "1",
@@ -148,6 +149,12 @@ func getPluginInformationFromRequest(id string, r *http.Request) (*PluginInforma
 		return nil, err
 	}
 
+	if LookupEnvOrString("GENERATE_INSTANCE_PASSWORDS", "0") == "1" {
+		result.ShopwarePassword = randSeq(10)
+	} else {
+		result.ShopwarePassword = "demo"
+	}
+
 	return &result, nil
 }
 
@@ -237,6 +244,7 @@ func getImage(info *PluginInformation) (string, error) {
 type EnvironmentRequest struct {
 	InstallVersion   string `json:"installVersion"`
 	PluginZipEncoded string `json:"plugin"`
+	ShopwarePassword string
 }
 
 type PluginInformation struct {
@@ -247,7 +255,8 @@ type PluginInformation struct {
 }
 
 type EnvironmentCreated struct {
-	ID             string `json:"id"`
-	URL            string `json:"domain"`
-	InstallVersion string `json:"installVersion"`
+	ID               string `json:"id"`
+	URL              string `json:"domain"`
+	InstallVersion   string `json:"installVersion"`
+	ShopwarePassword string `json:"shopwarePassword"`
 }

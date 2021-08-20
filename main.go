@@ -5,7 +5,6 @@ import (
 	"github.com/shopwareLabs/testenv-platform/handler"
 	"log"
 	"net/http"
-	"os"
 )
 
 func main() {
@@ -22,11 +21,4 @@ func main() {
 
 	log.Println("Go!")
 	log.Fatal(http.ListenAndServe("0.0.0.0:8080", router))
-}
-
-func LookupEnvOrString(key string, defaultVal string) string {
-	if val, ok := os.LookupEnv(key); ok {
-		return val
-	}
-	return defaultVal
 }
