@@ -2,16 +2,16 @@ package handler
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
+	"github.com/docker/docker/api/types/filters"
+	"github.com/hashicorp/go-version"
 	"io/ioutil"
 	"log"
-	"net/http"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/docker/docker/api/types"
-	"github.com/hashicorp/go-version"
 )
 
 var newestShopwareVersion = ""
@@ -24,78 +24,62 @@ func getNewestShopwareImage() string {
 	return newestShopwareVersion
 }
 
-func PullImageUpdatesTask(token string) {
+func PullImageUpdatesTask() {
 	for {
-		PullImageUpdates(token)
+		PullImageUpdates()
 		time.Sleep(time.Hour * 24)
 	}
 }
 
-func PullImageUpdates(token string) {
-	client := &http.Client{}
-	req, _ := http.NewRequest("GET", "https://api.github.com/users/shopwareLabs/packages/container/testenv/versions?per_page=100", nil)
-	req.Header.Set("User-Agent", "shopware/testenv Client")
-	req.Header.Set("Authorization", fmt.Sprintf("token %s", token))
-
-	resp, err := client.Do(req)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	respContent, err := ioutil.ReadAll(resp.Body)
+func PullImageUpdates() {
+	log.Println("Pulling images")
+	outputReader, err := dClient.ImagePull(context.Background(), "ghcr.io/shopwarelabs/testenv", types.ImagePullOptions{All: true})
 
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	var githubApiResponse GithubApiResponse
+	text, _ := ioutil.ReadAll(outputReader)
+	fmt.Println(string(text))
 
-	err = json.Unmarshal(respContent, &githubApiResponse)
+	log.Println("Pulled new images")
+	log.Println("Detecting newest version")
+
+	opts := types.ImageListOptions{}
+
+	opts.Filters = filters.NewArgs()
+	opts.Filters.Add("reference", "ghcr.io/shopwarelabs/testenv")
+
+	images, err := dClient.ImageList(context.Background(), opts)
 
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	versionCount := 0
+	versions := make([]*version.Version, 0)
 
-	for _, image := range githubApiResponse {
-		if len(image.Metadata.Container.Tags) == 0 {
-			continue
-		}
-		versionCount = versionCount + 1
-	}
-
-	versions := make([]*version.Version, versionCount)
-
-	for i, image := range githubApiResponse {
-		if len(image.Metadata.Container.Tags) == 0 {
+	for _, image := range images {
+		if len(image.RepoTags) == 0 {
 			continue
 		}
 
-		tag := image.Metadata.Container.Tags[0]
-
-		v, _ := version.NewVersion(tag)
-		versions[i] = v
-
-		imageName := fmt.Sprintf("ghcr.io/shopwarelabs/testenv:%s", tag)
-		log.Printf("Pullling image %s", imageName)
-		outputReader, err := dClient.ImagePull(context.Background(), imageName, types.ImagePullOptions{})
+		v, err := version.NewVersion(strings.Replace(image.RepoTags[0], "ghcr.io/shopwarelabs/testenv:", "", 1))
 
 		if err != nil {
 			log.Println(err)
+			continue
 		}
 
-		text, _ := ioutil.ReadAll(outputReader)
-		fmt.Println(string(text))
+		versions = append(versions, v)
 	}
 
 	sort.Sort(version.Collection(versions))
 	newestShopwareVersion = fmt.Sprintf("ghcr.io/shopwarelabs/testenv:%s", versions[len(versions)-1].String())
 
 	log.Println("Completed update task")
+	log.Printf("New newest Shopware version is: %s\n", newestShopwareVersion)
 }
 
 type GithubApiResponse []struct {

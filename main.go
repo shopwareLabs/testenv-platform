@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"github.com/julienschmidt/httprouter"
 	"github.com/shopwareLabs/testenv-platform/handler"
 	"log"
@@ -9,16 +8,8 @@ import (
 	"os"
 )
 
-var (
-	Github_PAT = ""
-)
-
 func main() {
-	flag.StringVar(&Github_PAT, "github-token", LookupEnvOrString("GITHUB_TOKEN", ""), "Github token for authentication for automatic updates")
-
-	if len(Github_PAT) > 0 {
-		go handler.PullImageUpdatesTask(Github_PAT)
-	}
+	go handler.PullImageUpdatesTask()
 
 	router := httprouter.New()
 
