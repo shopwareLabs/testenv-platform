@@ -85,9 +85,10 @@ func CreateEnvironment(w http.ResponseWriter, r *http.Request, ps httprouter.Par
 	}
 
 	apiResponse(w, EnvironmentCreated{
-		ID:             cBody.ID,
-		URL:            fmt.Sprintf("http://%s/shop/public", host),
-		InstallVersion: request.InstallVersion,
+		ID:               cBody.ID,
+		URL:              fmt.Sprintf("http://%s/shop/public", host),
+		InstallVersion:   request.InstallVersion,
+		ShopwarePassword: request.ShopwarePassword,
 	}, http.StatusOK)
 }
 
