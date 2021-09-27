@@ -22,6 +22,11 @@ import (
 func CreateEnvironment(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	id := randSeq(5)
 	request, err := getPluginInformationFromRequest(id, r)
+	scheme := "http"
+
+	if os.Getenv("USE_HTTPS") == "1" {
+		scheme = "https"
+	}
 
 	if err != nil {
 		log.Printf("%s", err)
@@ -41,12 +46,14 @@ func CreateEnvironment(w http.ResponseWriter, r *http.Request, ps httprouter.Par
 		return
 	}
 
+	appUrl := fmt.Sprintf("%s://%s/shop/public", scheme, host)
+
 	cConfig := &container.Config{
 		Image: imageName,
 		Env: []string{
 			fmt.Sprintf("PLUGIN_NAME=%s", request.Name),
 			fmt.Sprintf("VIRTUAL_HOST=%s", host),
-			fmt.Sprintf("APP_URL=%s", fmt.Sprintf("http://%s/shop/public", host)),
+			fmt.Sprintf("APP_URL=%s", appUrl),
 			fmt.Sprintf("SHOPWARE_DEMO_USER_PASSWORD=%s", request.ShopwarePassword),
 		},
 		Labels: map[string]string{
@@ -64,7 +71,7 @@ func CreateEnvironment(w http.ResponseWriter, r *http.Request, ps httprouter.Par
 	}
 	cNetwork := &network.NetworkingConfig{
 		EndpointsConfig: map[string]*network.EndpointSettings{
-			"docker_default": &network.EndpointSettings{},
+			"docker_default": {},
 		},
 	}
 
@@ -86,7 +93,7 @@ func CreateEnvironment(w http.ResponseWriter, r *http.Request, ps httprouter.Par
 
 	apiResponse(w, EnvironmentCreated{
 		ID:               cBody.ID,
-		URL:              fmt.Sprintf("http://%s/shop/public", host),
+		URL:              appUrl,
 		InstallVersion:   request.InstallVersion,
 		ShopwarePassword: request.ShopwarePassword,
 	}, http.StatusOK)
