@@ -87,7 +87,6 @@ COPY rootfs /
     
 EXPOSE 80
 
-COPY --chown=1000:1000 SwagTestEnvironment /var/www/shop/custom/plugins/SwagTestEnvironment
 STOPSIGNAL SIGKILL
 
 ENTRYPOINT ["/entrypoint.sh"]
