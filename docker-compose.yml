@@ -3,16 +3,14 @@ version: '2'
 services:
   traefik:
     image: traefik:2.4
-    command:
-      - "--pilot.dashboard=false"
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - ./data/traefik.yml:/traefik.yml:ro
+      - ./data/conf.d:/traefik.conf.d/
     ports:
       - "80:80"
+      - "443:443"
   api:
     image: shopware/testenv-platform
     env_file: .env

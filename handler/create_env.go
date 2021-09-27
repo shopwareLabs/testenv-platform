@@ -47,6 +47,23 @@ func CreateEnvironment(w http.ResponseWriter, r *http.Request, ps httprouter.Par
 	}
 
 	appUrl := fmt.Sprintf("%s://%s/shop/public", scheme, host)
+	labels := map[string]string{
+		"testenv":        "1",
+		"traefik.enable": "true",
+		fmt.Sprintf("traefik.http.routers.http-%s.rule", instanceName):        fmt.Sprintf("Host(`%s`)", host),
+		fmt.Sprintf("traefik.http.routers.http-%s.entrypoints", instanceName): "web",
+	}
+
+	if len(os.Getenv("SSL_PROVIDER")) > 0 {
+		labels[fmt.Sprintf("traefik.http.routers.http-%s.middlewares", instanceName)] = "web-redirect@file"
+		labels[fmt.Sprintf("traefik.http.routers.https-%s.middlewares", instanceName)] = "compress@file"
+		labels[fmt.Sprintf("traefik.http.routers.https-%s.rule", instanceName)] = fmt.Sprintf("Host(`%s`)", host)
+		labels[fmt.Sprintf("traefik.http.routers.https-%s.entrypoints", instanceName)] = "websecure"
+		labels[fmt.Sprintf("traefik.http.routers.https-%s.tls", instanceName)] = "true"
+		labels[fmt.Sprintf("traefik.http.routers.https-%s.tls.certresolver", instanceName)] = os.Getenv("SSL_PROVIDER")
+		labels[fmt.Sprintf("traefik.http.routers.https-%s.tls.domains[0].main", instanceName)] = os.Getenv("BASE_HOST")
+		labels[fmt.Sprintf("traefik.http.routers.https-%s.tls.domains[0].sans", instanceName)] = fmt.Sprintf("*.%s", os.Getenv("BASE_HOST"))
+	}
 
 	cConfig := &container.Config{
 		Image: imageName,
@@ -56,12 +73,7 @@ func CreateEnvironment(w http.ResponseWriter, r *http.Request, ps httprouter.Par
 			fmt.Sprintf("APP_URL=%s", appUrl),
 			fmt.Sprintf("SHOPWARE_DEMO_USER_PASSWORD=%s", request.ShopwarePassword),
 		},
-		Labels: map[string]string{
-			"testenv":        "1",
-			"traefik.enable": "true",
-			fmt.Sprintf("traefik.http.routers.%s.rule", instanceName):        fmt.Sprintf("Host(`%s`)", host),
-			fmt.Sprintf("traefik.http.routers.%s.entrypoints", instanceName): "web",
-		},
+		Labels: labels,
 	}
 
 	cHost := &container.HostConfig{

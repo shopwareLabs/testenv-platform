@@ -10,7 +10,11 @@ while ! mysqladmin ping --silent; do
     sleep 1
 done
 
-mysql -proot shopware -e "UPDATE sales_channel_domain set url = 'http://${VIRTUAL_HOST}/shop/public' where url = 'http://localhost/shop/public'"
+if [[ -n $APP_URL ]]; then
+  mysql -proot shopware -e "UPDATE sales_channel_domain set url = '${APP_URL}' where url = 'http://localhost/shop/public'"
+else
+  mysql -proot shopware -e "UPDATE sales_channel_domain set url = 'http://${VIRTUAL_HOST}/shop/public' where url = 'http://localhost/shop/public'"
+fi
 
 sudo -u www-data git clone https://github.com/FriendsOfShopware/FroshPlatformAdminer.git /var/www/shop/custom/plugins/FroshPlatformAdminer --depth=1
 sudo -u www-data git clone https://github.com/FriendsOfShopware/FroshTools.git /var/www/shop/custom/plugins/FroshTools --depth=1
