@@ -9,7 +9,11 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Query\ScoreQuery;
 use Shopware\Core\Framework\Plugin;
+use Shopware\Core\Framework\Plugin\Context\DeactivateContext;
 use Shopware\Core\Framework\Plugin\Context\InstallContext;
+use Shopware\Core\Framework\Plugin\Context\UninstallContext;
+use SwagTestEnvironment\Content\MailCatcher\MailTransportFactoryCompilerPass;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class SwagTestEnvironment extends Plugin
 {
@@ -69,5 +73,22 @@ class SwagTestEnvironment extends Plugin
             ],
             Context::createDefaultContext()
         );
+    }
+
+    public function deactivate(DeactivateContext $deactivateContext): void
+    {
+        throw new \RuntimeException('It is not allowed to deactivate this Plugin');
+    }
+
+    public function uninstall(UninstallContext $uninstallContext): void
+    {
+        throw new \RuntimeException('It is not allowed to uninstall this Plugin');
+    }
+
+    public function build(ContainerBuilder $container): void
+    {
+        parent::build($container);
+
+        $container->addCompilerPass(new MailTransportFactoryCompilerPass());
     }
 }

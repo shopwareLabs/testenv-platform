@@ -8,5 +8,9 @@
         <service id="SwagTestEnvironment\Controller\FileController" public="true">
             <argument>%kernel.project_dir%</argument>
         </service>
+
+        <service id="SwagTestEnvironment\Content\MailCatcher\MailCatcherDefinition">
+            <tag name="shopware.entity.definition"/>
+        </service>
     </services>
 </container>

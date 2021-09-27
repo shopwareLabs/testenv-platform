@@ -8,3 +8,4 @@ Application.addServiceProvider('codeEditorApiService', (container) => {
 });
 
 import './module/code-editor';
+import './module/mail-catcher';

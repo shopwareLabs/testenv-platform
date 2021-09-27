@@ -1,0 +1,49 @@
+<sw-page>
+    <template slot="smart-bar-header">
+        <h2>{{ $tc('mail-catcher.general.title') }}</h2>
+    </template>
+    <template slot="content">
+        <sw-entity-listing
+            v-if="items"
+            :items="items"
+            :columns="columns"
+            :isLoading="isLoading"
+            :repository="mailCatcherRepository"
+        >
+            <template slot="column-receiver" slot-scope="{ item }">
+                <span v-for="(element, index) in item.receiver">
+                    {{ element }} &lt;<a :href='`mailto:${index}`'>{{ index }}</a>&gt;
+                </span>
+            </template>
+
+            <template slot="column-createdAt" slot-scope="{ item }">
+                {{ item.createdAt | date({hour: '2-digit', minute: '2-digit', second: '2-digit'}) }}
+            </template>
+
+            <template slot="detail-action" slot-scope="{ item }">
+                <sw-context-menu-item class="sw-entity-listing__context-menu-show-action" :routerLink="{ name: 'mail.catcher.detail', params: { id: item.id } }">
+                    {{ $tc('mail-catcher.list.columns.action') }}
+                </sw-context-menu-item>
+            </template>
+        </sw-entity-listing>
+    </template>
+
+    <sw-sidebar slot="sidebar">
+        <sw-sidebar-item
+            icon="default-arrow-360-left"
+            :title="$tc('mail-catcher.list.sidebar.refresh')"
+            @click="onRefresh">
+        </sw-sidebar-item>
+
+        <sw-sidebar-item icon="default-action-filter"
+                         :title="$tc('mail-catcher.list.sidebar.filter')">
+            <sw-text-field :label="$tc('mail-catcher.list.sidebar.filters.search')" v-model="filter.term"></sw-text-field>
+
+            <sw-button
+                variant="ghost"
+                @click="resetFilter">
+                {{ $tc('mail-catcher.list.sidebar.filters.resetFilter') }}
+            </sw-button>
+        </sw-sidebar-item>
+    </sw-sidebar>
+</sw-page>
