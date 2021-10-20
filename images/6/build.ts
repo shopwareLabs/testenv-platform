@@ -40,7 +40,7 @@ function getMajorVersion(version: string) {
 main();
 
 async function getReleases() {
-    let json = await (await fetch('https://update-api.shopware.com/v1/releases/install?major=6&channel=rc')).json();
+    let json = await (await fetch('https://n0g72msg55.execute-api.eu-central-1.amazonaws.com')).json();
     let releases = [];
     let givenTags: string[] = [];
 
@@ -65,7 +65,7 @@ async function getReleases() {
         let image = {
             imageNames: ['shopware/testenv', 'ghcr.io/shopwarelabs/testenv'],
             version: release.version,
-            download: release.uri,
+            download: release.download,
             tags: [release.version]
         }
 
