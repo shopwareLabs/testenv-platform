@@ -37,11 +37,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Login into Docker Registery
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "shyim" --password-stdin
-        
       - name: Login into Github Docker Registery
-        run: echo ${{ secrets.GITHUB_TOKEN  }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Set up Docker Buildx
         id: buildx

@@ -63,7 +63,7 @@ async function getReleases() {
         }
 
         let image = {
-            imageNames: ['shopware/testenv', 'ghcr.io/shopwarelabs/testenv'],
+            imageNames: ['ghcr.io/shopwarelabs/testenv'],
             version: release.version,
             download: release.download,
             tags: [release.version]
