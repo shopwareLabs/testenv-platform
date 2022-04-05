@@ -37,7 +37,7 @@ func CreateEnvironment(w http.ResponseWriter, r *http.Request, ps httprouter.Par
 	log.Printf("Requested environment for version: %s and plugin: %s", request.InstallVersion, request.Name)
 
 	instanceName := strings.ToLower(fmt.Sprintf("%s-%s", request.Name, id))
-	host := strings.ToLower(fmt.Sprintf("%s.%s", instanceName, os.Getenv("BASE_HOST")))
+	host := strings.ReplaceAll(strings.ToLower(fmt.Sprintf("%s.%s", instanceName, os.Getenv("BASE_HOST"))), "_", "-")
 
 	imageName, err := getImage(request)
 	if err != nil {
