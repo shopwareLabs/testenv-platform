@@ -17,7 +17,6 @@ else
 fi
 
 sudo -u www-data git clone https://github.com/FriendsOfShopware/FroshPlatformAdminer.git /var/www/shop/custom/plugins/FroshPlatformAdminer --depth=1
-sudo -u www-data git clone https://github.com/FriendsOfShopware/FroshTools.git /var/www/shop/custom/plugins/FroshTools --depth=1
 sudo -u www-data git clone https://github.com/shopwareLabs/SwagTestEnvironment.git /var/www/shop/custom/plugins/SwagTestEnvironment --depth=1
 
 rm -rf /var/www/shop/var/cache/* || true
