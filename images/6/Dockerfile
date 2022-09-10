@@ -77,7 +77,7 @@ RUN /usr/bin/mysqld --basedir=/usr --datadir=/var/lib/mysql --plugin-dir=/usr/li
     php bin/console user:create "demo" --admin --password="demo" -n && \
     php bin/console sales-channel:create:storefront --name=Storefront --url="http://localhost/shop/public" && \
     php bin/console theme:change --all Storefront && \
-    php bin/console framework:demodata -p 3000 && \
+    php bin/console framework:demodata --products 3000 && \
     php bin/console dal:refresh:index && \
     composer req frosh/tools:* && \
     php /fix-install.php && \
