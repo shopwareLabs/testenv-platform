@@ -1,4 +1,4 @@
-FROM php:7.4-fpm-alpine3.13
+FROM php:7.4-fpm-alpine3.16
 
 ENV TZ=Europe/Berlin \
     APP_URL=http://localhost/shop/public \
