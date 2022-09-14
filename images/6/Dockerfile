@@ -59,7 +59,8 @@ RUN apk add --no-cache \
     chown -R www-data:www-data /var/www && \
     usermod -u 1000 www-data && \
     mysql_install_db --datadir=/var/lib/mysql --user=mysql && \
-    mkdir /run/mysqld/ && chown -R mysql:mysql /run/mysqld/
+    mkdir /run/mysqld/ && chown -R mysql:mysql /run/mysqld/ && \
+    apk add --no-cache icu-data-full
 
 ARG SHOPWARE_DL=https://www.shopware.com/de/Download/redirect/version/sw6/file/install_6.2.0_1589874223.zip
 
