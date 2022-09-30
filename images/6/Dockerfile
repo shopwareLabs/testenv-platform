@@ -73,6 +73,7 @@ RUN /usr/bin/mysqld --basedir=/usr --datadir=/var/lib/mysql --plugin-dir=/usr/li
     wget -qq $SHOPWARE_DL && \
     unzip -qq *.zip && \
     rm *.zip && \
+    mkdir -p repos/core repos/administration repos/storefront repos/elasticsearch repos/recovery && \
     php bin/console system:install --create-database --force && \
     php bin/console system:generate-jwt-secret || true && \
     php bin/console user:create "demo" --admin --password="demo" -n && \
