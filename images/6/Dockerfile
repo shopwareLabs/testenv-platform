@@ -25,6 +25,7 @@ ENV TZ=Europe/Berlin \
     PHP_MAX_UPLOAD_SIZE=128m \
     PHP_MAX_EXECUTION_TIME=300 \
     PHP_MEMORY_LIMIT=512m \
+    IPE_GD_WITHOUTAVIF=1 \
     LD_PRELOAD="/usr/lib/preloadable_libiconv.so php"
 
 COPY --from=ochinchina/supervisord:latest /usr/local/bin/supervisord /usr/bin/supervisord
