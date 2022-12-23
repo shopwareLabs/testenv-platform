@@ -29,7 +29,7 @@ ENV TZ=Europe/Berlin \
     LD_PRELOAD="/usr/lib/preloadable_libiconv.so php"
 
 COPY --from=ochinchina/supervisord:latest /usr/local/bin/supervisord /usr/bin/supervisord
-COPY --from=composer /usr/bin/composer /usr/local/bin/composer
+COPY --from=composer:2.4 /usr/bin/composer /usr/local/bin/composer
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/bin/
 COPY --from=ghcr.io/shyim/gnu-libiconv:v3.14 /gnu-libiconv-1.15-r3.apk /gnu-libiconv-1.15-r3.apk
 
