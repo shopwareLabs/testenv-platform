@@ -77,7 +77,7 @@ RUN /usr/bin/mysqld --basedir=/usr --datadir=/var/lib/mysql --plugin-dir=/usr/li
     mkdir -p repos/core repos/administration repos/storefront repos/elasticsearch repos/recovery && \
     php bin/console system:install --create-database --force && \
     php bin/console system:generate-jwt-secret || true && \
-    php bin/console user:create "demo" --admin --password="demo" -n && \
+    php bin/console user:create "demo" --admin --password="demodemo" -n && \
     php bin/console sales-channel:create:storefront --name=Storefront --url="http://localhost/shop/public" && \
     php bin/console theme:change --all Storefront && \
     php bin/console framework:demodata --products 3000 && \
