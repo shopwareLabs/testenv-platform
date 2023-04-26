@@ -1,4 +1,4 @@
-FROM php:7.4-fpm-alpine3.16
+FROM php:8.1-fpm-alpine
 
 ENV TZ=Europe/Berlin \
     APP_URL=http://localhost/shop/public \
@@ -29,9 +29,10 @@ ENV TZ=Europe/Berlin \
     LD_PRELOAD="/usr/lib/preloadable_libiconv.so php"
 
 COPY --from=ochinchina/supervisord:latest /usr/local/bin/supervisord /usr/bin/supervisord
-COPY --from=composer:2.4 /usr/bin/composer /usr/local/bin/composer
+COPY --from=composer/composer:2-bin /composer /usr/local/bin/composer
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/bin/
 COPY --from=ghcr.io/shyim/gnu-libiconv:v3.14 /gnu-libiconv-1.15-r3.apk /gnu-libiconv-1.15-r3.apk
+COPY --from=ghcr.io/friendsofshopware/shopware-cli /usr/local/bin/shopware-cli /usr/local/bin/shopware-cli
 
 RUN apk add --no-cache \
       nginx \
@@ -56,35 +57,36 @@ RUN apk add --no-cache \
     chown -R www-data:www-data /var/lib/nginx /var/tmp/nginx/ && \
     chmod 777 -R /var/tmp/nginx/ && \
     rm -rf /tmp/* && \
-    mkdir -p /var/www/shop/ && \
+    mkdir -p /var/www/ && \
     chown -R www-data:www-data /var/www && \
     usermod -u 1000 www-data && \
     mysql_install_db --datadir=/var/lib/mysql --user=mysql && \
     mkdir /run/mysqld/ && chown -R mysql:mysql /run/mysqld/ && \
     apk add --no-cache icu-data-full
 
-ARG SHOPWARE_DL=https://www.shopware.com/de/Download/redirect/version/sw6/file/install_6.2.0_1589874223.zip
+ARG SHOPWARE_VERSION=6.5.0.0-rc4
 
-COPY rootfs/fix-install.php /fix-install.php
+COPY patches /opt/patches
 COPY rootfs/usr /usr
 
 RUN /usr/bin/mysqld --basedir=/usr --datadir=/var/lib/mysql --plugin-dir=/usr/lib/mysql/plugin --user=mysql & sleep 2 && \
     mysqladmin --user=root password 'root' && \
-    cd /var/www/shop/ && \
-    wget -qq $SHOPWARE_DL && \
-    unzip -qq *.zip && \
-    rm *.zip && \
-    mkdir -p repos/core repos/administration repos/storefront repos/elasticsearch repos/recovery && \
-    php bin/console system:install --create-database --force && \
+    cd /var/www/ && \
+    shopware-cli project create shop $SHOPWARE_VERSION && \
+    cd shop && \
+    patch -p1 < /opt/patches/customer-generator.patch && \
+    php bin/console system:install --create-database --force --shop-locale nl-NL && \
     php bin/console system:generate-jwt-secret || true && \
     php bin/console user:create "demo" --admin --password="demodemo" -n && \
     php bin/console sales-channel:create:storefront --name=Storefront --url="http://localhost/shop/public" && \
     php bin/console theme:change --all Storefront && \
+    composer req --dev shopware/dev-tools --no-scripts && \
     php bin/console framework:demodata --products 3000 && \
     php bin/console dal:refresh:index && \
-    composer req frosh/tools:* && \
-    php /fix-install.php && \
     mysql shopware -e "INSERT INTO system_config (id, configuration_key, configuration_value, sales_channel_id, created_at, updated_at) VALUES (X'b3ae4d7111114377af9480c4a0911111', 'core.frw.completedAt', '{\"_value\": \"2019-10-07T10:46:23+00:00\"}', NULL, '2019-10-07 10:46:23.169', NULL);" && \
+    composer req "frosh/tools:*" "frosh/adminer-platform:*" --no-scripts  && \
+    composer remove --dev shopware/dev-tools --no-scripts && \
+    composer install --no-dev --no-scripts && \
     chown -R 1000 /var/www/shop
 
 COPY rootfs /

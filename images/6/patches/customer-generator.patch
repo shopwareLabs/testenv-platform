@@ -1,0 +1,25 @@
+Index: vendor/shopware/core/Framework/Demodata/Generator/CustomerGenerator.php
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/vendor/shopware/core/Framework/Demodata/Generator/CustomerGenerator.php b/vendor/shopware/core/Framework/Demodata/Generator/CustomerGenerator.php
+--- a/vendor/shopware/core/Framework/Demodata/Generator/CustomerGenerator.php	(revision 88e2f68d0539071fc4d11841911d93800841285e)
++++ b/vendor/shopware/core/Framework/Demodata/Generator/CustomerGenerator.php	(date 1682423360980)
+@@ -64,14 +64,7 @@
+         $data = [
+             'id' => $id,
+             'displayGross' => false,
+-            'translations' => [
+-                'en-GB' => [
+-                    'name' => 'Net price customer group',
+-                ],
+-                'de-DE' => [
+-                    'name' => 'Nettopreis-Kundengruppe',
+-                ],
+-            ],
++            'name' => 'Net price customer group',
+         ];
+ 
+         $this->customerGroupRepository->create([$data], $context);
+
