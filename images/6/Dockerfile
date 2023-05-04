@@ -64,7 +64,7 @@ RUN apk add --no-cache \
     mkdir /run/mysqld/ && chown -R mysql:mysql /run/mysqld/ && \
     apk add --no-cache icu-data-full
 
-ARG SHOPWARE_VERSION=6.5.0.0-rc4
+ARG SHOPWARE_VERSION=6.5.0.0
 
 COPY patches /opt/patches
 COPY rootfs/usr /usr
