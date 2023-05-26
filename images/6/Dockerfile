@@ -74,7 +74,6 @@ RUN /usr/bin/mysqld --basedir=/usr --datadir=/var/lib/mysql --plugin-dir=/usr/li
     cd /var/www/ && \
     shopware-cli project create shop $SHOPWARE_VERSION && \
     cd shop && \
-    patch -p1 < /opt/patches/customer-generator.patch && \
     php bin/console system:install --create-database --force --shop-locale nl-NL && \
     php bin/console system:generate-jwt-secret || true && \
     php bin/console user:create "demo" --admin --password="demodemo" -n && \
