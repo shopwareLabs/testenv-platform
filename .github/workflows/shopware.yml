@@ -19,7 +19,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
           
       - name: Build Image
-        run: docker build -t ghcr.io/shopwarelabs/testenv:6.5.1 --build-arg SHOPWARE_VERSION=6.5.1.0 images/6
+        run: docker build -t ghcr.io/shopwarelabs/testenv:6.5.2 --build-arg SHOPWARE_VERSION=6.5.2.0 images/6
         
       - name: Push Image
-        run: docker push ghcr.io/shopwarelabs/testenv:6.5.1
+        run: docker push ghcr.io/shopwarelabs/testenv:6.5.2
