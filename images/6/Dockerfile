@@ -64,9 +64,8 @@ RUN apk add --no-cache \
     mkdir /run/mysqld/ && chown -R mysql:mysql /run/mysqld/ && \
     apk add --no-cache icu-data-full
 
-ARG SHOPWARE_VERSION=6.5.0.0
+ARG SHOPWARE_VERSION=6.5.2.1
 
-COPY patches /opt/patches
 COPY rootfs/usr /usr
 
 RUN /usr/bin/mysqld --basedir=/usr --datadir=/var/lib/mysql --plugin-dir=/usr/lib/mysql/plugin --user=mysql & sleep 2 && \
@@ -89,8 +88,12 @@ RUN /usr/bin/mysqld --basedir=/usr --datadir=/var/lib/mysql --plugin-dir=/usr/li
     chown -R 1000 /var/www/shop
 
 COPY rootfs /
+COPY patches/ConsumeMessagesController.php /var/www/shop/vendor/shopware/core/Framework/MessageQueue/Api/ConsumeMessagesController.php
+COPY patches/MessageQueueException.php /var/www/shop/vendor/shopware/core/Framework/MessageQueue/MessageQueueException.php
+COPY patches/message-queue.xml /var/www/shop/vendor/shopware/core/Framework/DependencyInjection/message-queue.xml
     
 EXPOSE 80
+WORKDIR /var/www/shop
 
 STOPSIGNAL SIGKILL
 
