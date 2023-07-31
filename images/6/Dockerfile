@@ -88,10 +88,7 @@ RUN /usr/bin/mysqld --basedir=/usr --datadir=/var/lib/mysql --plugin-dir=/usr/li
     chown -R 1000 /var/www/shop
 
 COPY rootfs /
-COPY patches/ConsumeMessagesController.php /var/www/shop/vendor/shopware/core/Framework/MessageQueue/Api/ConsumeMessagesController.php
-COPY patches/MessageQueueException.php /var/www/shop/vendor/shopware/core/Framework/MessageQueue/MessageQueueException.php
-COPY patches/message-queue.xml /var/www/shop/vendor/shopware/core/Framework/DependencyInjection/message-queue.xml
-    
+
 EXPOSE 80
 WORKDIR /var/www/shop
 
