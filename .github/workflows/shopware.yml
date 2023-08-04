@@ -20,7 +20,7 @@ jobs:
 
       - name: Get latest version
         run: |
-          VERSION=$(curl -s https://api.github.com/repos/shopware/platform/releases/latest | jq -r .tag_name | sed 's/^.//)
+          VERSION=$(curl -s https://api.github.com/repos/shopware/platform/releases/latest | jq -r .tag_name | sed 's/^.//')
           TAG=$(echo $VERSION | tr . ' ' | awk '{print $1 "." $2 "." $3}')
 
           echo "version=$VERSION" >> $GITHUB_ENV
