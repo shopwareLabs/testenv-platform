@@ -17,9 +17,17 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get latest version
+        run: |
+          VERSION=$(curl -s https://api.github.com/repos/shopware/platform/releases/latest | jq -r .tag_name | sed 's/^.//)
+          TAG=$(echo $VERSION | tr . ' ' | awk '{print $1 "." $2 "." $3}')
+
+          echo "version=$VERSION" >> $GITHUB_ENV
+          echo "tag=$TAG" >> $GITHUB_ENV
           
       - name: Build Image
-        run: docker build -t ghcr.io/shopwarelabs/testenv:6.5.3 --build-arg SHOPWARE_VERSION=6.5.3.3 images/6
+        run: docker build -t ghcr.io/shopwarelabs/testenv:${{ env.tag }} --build-arg SHOPWARE_VERSION=${{ env.version }} images/6
         
       - name: Push Image
-        run: docker push ghcr.io/shopwarelabs/testenv:6.5.3
+        run: docker push ghcr.io/shopwarelabs/testenv:${{ env.tag }}
