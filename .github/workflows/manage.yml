@@ -1,7 +1,12 @@
 name: Build Manager Image
 
 on:
+  workflow_dispatch:  
   push:
+    paths: 
+      - go.mod
+      - go.sum
+      - handler/**
 
 jobs:
   build:
@@ -9,17 +14,14 @@ jobs:
     
     steps:
       - name: Clone
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         
-      - name: Login to GitHub Docker Registry
-        uses: docker/login-action@v1
+      - name: Login into Github Docker Registery
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - uses: docker/build-push-action@v4
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-          
-      - name: Build Image
-        run: docker build -t ghcr.io/shopwarelabs/testenv/manage .
-        
-      - name: Push Image
-        run: docker push ghcr.io/shopwarelabs/testenv/manage
+          tags: ghcr.io/shopwarelabs/testenv/manage
+          platforms: linux/amd64
+          push: true
+          provenance: false
