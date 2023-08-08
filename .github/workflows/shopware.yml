@@ -8,7 +8,14 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        include:
+          - runner: ubuntu-latest
+            arch: amd64
+          - runner: buildjet-2vcpu-ubuntu-2204-arm
+            arch: amd64
     
     steps:
       - name: Clone
@@ -30,12 +37,11 @@ jobs:
 
       - uses: docker/build-push-action@v4
         with:
-          tags: ghcr.io/shopwarelabs/testenv:${{ env.tag }}
+          tags: ghcr.io/shopwarelabs/testenv:${{ env.tag }}-${{ matrix.arch }}
           build-args: |
             SHOPWARE_VERSION=${{ env.version }}
           context: images/6
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          platforms: linux/amd64,linux/arm64
           push: true
           provenance: false
