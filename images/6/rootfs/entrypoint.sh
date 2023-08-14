@@ -16,17 +16,7 @@ else
   mysql -proot shopware -e "UPDATE sales_channel_domain set url = 'http://${VIRTUAL_HOST}/shop/public' where url = 'http://localhost/shop/public'"
 fi
 
-sudo -u www-data git clone https://github.com/shopwareLabs/SwagTestEnvironment.git /var/www/shop/custom/plugins/SwagTestEnvironment --depth=1
-
 rm -rf /var/www/shop/var/cache/* || true
-
-sudo -E -u www-data /var/www/shop/bin/console store:download -p SwagLanguagePack
-sudo -E -u www-data /var/www/shop/bin/console plugin:refresh
-sudo -E -u www-data /var/www/shop/bin/console plugin:install -n --activate SwagLanguagePack
-
-
-sudo -E -u www-data /var/www/shop/bin/console plugin:install -n --activate FroshPlatformAdminer SwagTestEnvironment
-sudo -E -u www-data /var/www/shop/bin/console plugin:install -n --activate FroshTools
 
 if [[ -n $SHOPWARE_DEMO_USER_PASSWORD ]]; then
   sudo -E -u www-data /var/www/shop/bin/console frosh:user:change:password demo "$SHOPWARE_DEMO_USER_PASSWORD"

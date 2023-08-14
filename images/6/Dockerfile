@@ -85,7 +85,11 @@ RUN /usr/bin/mysqld --basedir=/usr --datadir=/var/lib/mysql --plugin-dir=/usr/li
     composer req "frosh/tools:*" "frosh/adminer-platform:*" --no-scripts  && \
     composer remove --dev shopware/dev-tools --no-scripts && \
     composer install --no-dev --no-scripts && \
-    chown -R 1000 /var/www/shop
+    php bin/console store:download -p SwagLanguagePack && \
+    git clone https://github.com/shopwareLabs/SwagTestEnvironment.git /var/www/shop/custom/plugins/SwagTestEnvironment --depth=1 && \
+    php bin/console plugin:refresh && \
+    php bin/console plugin:install -n --activate SwagLanguagePack FroshPlatformAdminer SwagTestEnvironment FroshTools && \
+    chown -R 1000 /var/www/shop /tmp/composer
 
 COPY rootfs /
 
