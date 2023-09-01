@@ -82,6 +82,7 @@ RUN /usr/bin/mysqld --basedir=/usr --datadir=/var/lib/mysql --plugin-dir=/usr/li
     php -dmemory_limit=2G bin/console -e prod framework:demodata --products 3000 && \
     php bin/console -e prod dal:refresh:index && \
     mysql shopware -e "INSERT INTO system_config (id, configuration_key, configuration_value, sales_channel_id, created_at, updated_at) VALUES (X'b3ae4d7111114377af9480c4a0911111', 'core.frw.completedAt', '{\"_value\": \"2019-10-07T10:46:23+00:00\"}', NULL, '2019-10-07 10:46:23.169', NULL);" && \
+    php bin/console system:config:set core.metrics.shareUsageData false --json && \
     composer req "frosh/tools:*" "frosh/adminer-platform:*" --no-scripts  && \
     composer remove --dev shopware/dev-tools --no-scripts && \
     composer install --no-dev --no-scripts && \
