@@ -66,7 +66,7 @@ RUN apk add --no-cache \
 
 ARG SHOPWARE_VERSION=6.5.3.3
 
-COPY rootfs /
+COPY rootfs/usr /usr
 
 RUN /usr/bin/mysqld --basedir=/usr --datadir=/var/lib/mysql --plugin-dir=/usr/lib/mysql/plugin --user=mysql & sleep 2 && \
     mysqladmin --user=root password 'root' && \
@@ -91,6 +91,8 @@ RUN /usr/bin/mysqld --basedir=/usr --datadir=/var/lib/mysql --plugin-dir=/usr/li
     php bin/console plugin:refresh && \
     php bin/console plugin:install -n --activate SwagLanguagePack FroshPlatformAdminer SwagTestEnvironment FroshTools && \
     chown -R 1000 /var/www/shop /tmp/composer
+
+COPY rootfs /
 
 EXPOSE 80
 WORKDIR /var/www/shop
