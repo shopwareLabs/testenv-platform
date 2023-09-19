@@ -64,7 +64,7 @@ RUN apk add --no-cache \
     mkdir /run/mysqld/ && chown -R mysql:mysql /run/mysqld/ && \
     apk add --no-cache icu-data-full
 
-ARG SHOPWARE_VERSION=6.5.3.3
+ARG SHOPWARE_VERSION=6.5.5.1
 
 COPY rootfs/usr /usr
 
@@ -89,10 +89,11 @@ RUN /usr/bin/mysqld --basedir=/usr --datadir=/var/lib/mysql --plugin-dir=/usr/li
     php bin/console store:download -p SwagLanguagePack && \
     git clone https://github.com/shopwareLabs/SwagTestEnvironment.git /var/www/shop/custom/plugins/SwagTestEnvironment --depth=1 && \
     php bin/console plugin:refresh && \
-    php bin/console plugin:install -n --activate SwagLanguagePack FroshPlatformAdminer SwagTestEnvironment FroshTools && \
-    chown -R 1000 /var/www/shop /tmp/composer
+    php bin/console plugin:install -n --activate SwagLanguagePack FroshPlatformAdminer SwagTestEnvironment FroshTools
 
 COPY rootfs /
+
+RUN chown -R 1000 /var/www/shop /tmp/composer
 
 EXPOSE 80
 WORKDIR /var/www/shop
