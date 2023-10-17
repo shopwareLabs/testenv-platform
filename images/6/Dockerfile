@@ -47,7 +47,7 @@ RUN apk add --no-cache \
       mariadb-client \
       git && \
     apk add --no-cache --allow-untrusted /gnu-libiconv-1.15-r3.apk && rm /gnu-libiconv-1.15-r3.apk && \
-    install-php-extensions bcmath gd intl mysqli pdo_mysql sockets bz2 soap zip gmp ffi redis opcache calendar && \
+    install-php-extensions bcmath gd intl mysqli pdo_mysql sockets bz2 soap zip gmp ffi redis opcache calendar pcntl && \
     ln -s /usr/local/bin/php /usr/bin/php && \
     ln -sf /dev/stdout /var/log/nginx/access.log && \
     ln -sf /dev/stderr /var/log/nginx/error.log && \
