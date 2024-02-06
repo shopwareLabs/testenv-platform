@@ -19,7 +19,7 @@ fi
 rm -rf /var/www/shop/var/cache/* || true
 
 if [[ -n $SHOPWARE_DEMO_USER_PASSWORD ]]; then
-  sudo -E -u www-data /var/www/shop/bin/console frosh:user:change:password demo "$SHOPWARE_DEMO_USER_PASSWORD"
+  sudo -E -u www-data /var/www/shop/bin/console user:change-password demo -n --password="$SHOPWARE_DEMO_USER_PASSWORD"
 fi
 
 /usr/bin/supervisord -c /etc/supervisord.conf
