@@ -29,7 +29,7 @@ ENV TZ=Europe/Berlin \
     LD_PRELOAD="/usr/lib/preloadable_libiconv.so php"
 
 COPY --from=ochinchina/supervisord:latest /usr/local/bin/supervisord /usr/bin/supervisord
-COPY --from=composer/composer:2.6-bin /composer /usr/local/bin/composer
+COPY --from=composer/composer:2-bin /composer /usr/local/bin/composer
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/bin/
 COPY --from=ghcr.io/shyim/gnu-libiconv:v3.14 /gnu-libiconv-1.15-r3.apk /gnu-libiconv-1.15-r3.apk
 COPY --from=ghcr.io/friendsofshopware/shopware-cli /usr/local/bin/shopware-cli /usr/local/bin/shopware-cli
@@ -71,7 +71,7 @@ COPY rootfs/usr /usr
 RUN /usr/bin/mysqld --basedir=/usr --datadir=/var/lib/mysql --plugin-dir=/usr/lib/mysql/plugin --user=mysql & sleep 2 && \
     mysqladmin --user=root password 'root' && \
     cd /var/www/ && \
-    shopware-cli project create shop $SHOPWARE_VERSION && \
+    COMPOSER_ALLOW_SUPERUSER=1 shopware-cli project create shop $SHOPWARE_VERSION && \
     cd shop && \
     php bin/console system:install --create-database --force --shop-locale nl-NL && \
     php bin/console system:generate-jwt-secret || true && \
