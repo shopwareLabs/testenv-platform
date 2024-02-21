@@ -17,10 +17,10 @@ docker run --rm -p 80:80 -e VIRTUAL_HOST=localhost ghcr.io/shopwarelabs/testenv:
 
 Access shop at http://localhost/shop/public
 
-### Credentials
+### Admin Credentials
 
 User: `demo`
-Password: `demo`
+Password: `demodemo`
 
 ## API
 
